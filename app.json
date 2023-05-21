@@ -4,13 +4,14 @@
     "slug": "tune-tidy-native",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/large-logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "scheme": "tunetidy",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -21,10 +22,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tunetidy.native"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/large-logo.png"
     }
   }
 }
