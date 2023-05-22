@@ -17,7 +17,7 @@ function LandingPage({ navigation }) {
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
   const REDIRECT_URI = REACT_APP_NODE_ENV === 'dev'
     ? 'exp://192.168.0.25:19000'
-    : 'tunetidy://';
+    : Linking.createURL();
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
   const SCOPES = [
@@ -30,6 +30,7 @@ function LandingPage({ navigation }) {
   ].join("%20");
 
   const handleLoginButtonPress = async () => {
+    //console.log(REDIRECT_URI);
     Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
     Linking.addEventListener('url', async (event) => {
       //console.log(event.url);

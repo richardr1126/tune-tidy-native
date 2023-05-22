@@ -1,30 +1,49 @@
 import React from 'react';
-import { Container, Select, Heading, Text, Center, Spinner, Box, VStack, FlatList, HStack, Image, Avatar, Pressable } from "native-base";
+import { Container, Select, Heading, Text, Center, Spinner, VStack, FlatList, HStack, Image, Pressable } from "native-base";
 import * as Linking from 'expo-linking';
 
-function TopArtists({ topArtists }) {
+function TopAlbums({ topTracks }) {
   const [timeRange, setTimeRange] = React.useState("medium_term");
   const timeRanges = [
     { label: "Last Month", value: "short_term" },
     { label: "Last 6 Months", value: "medium_term" },
-    { label: "All Time", value: "long_term" },
+    { label: "All Time", value: "long_term" }
   ];
 
+  // Grouping tracks by albums
+  const topAlbums = topTracks[timeRange]?.items.reduce((acc, item) => {
+    if (!acc[item.albumId]) {
+      acc[item.albumId] = {
+        name: item.albumName,
+        image: item.image,
+        url: item.url,
+        tracks: [item],
+        id: item.albumId,
+        totalTracks: item.albumTotalTracks
+      };
+    } else {
+      acc[item.albumId].tracks.push(item);
+    }
+    return acc;
+  }, {});
+
+  // Sorting albums by the number of tracks in descending order
+  const sortedTopAlbums = Object.values(topAlbums).sort((a, b) => b.tracks.length - a.tracks.length);
 
   return (
     <VStack my={'50px'} mx={'25px'}>
-      <Heading>Top Artists</Heading>
+      <Heading>Top Albums</Heading>
       <Select selectedValue={timeRange} minWidth={200} maxWidth={200} accessibilityLabel="Choose Time Range" placeholder="Choose Time Range" mt={1} onValueChange={itemValue => setTimeRange(itemValue)} bg={'white'}>
         {timeRanges.map((timeRange) => (
           <Select.Item label={timeRange.label} value={timeRange.value} key={timeRange.value} borderRadius={'sm'} />
         ))}
       </Select>
 
-      {topArtists[timeRange]
+      {sortedTopAlbums
         ? (
           <FlatList
             mt={2}
-            data={topArtists[timeRange].items}
+            data={sortedTopAlbums}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <Pressable onPress={() => Linking.openURL(item.url)}>
@@ -37,16 +56,29 @@ function TopArtists({ topArtists }) {
                     }]
                   }}>
                     <HStack alignItems="center">
-                      <Avatar mr={2} size="md" source={{ uri: item.image }} />
-                      <Text mr={1} fontWeight='bold' fontSize='xl'>{index + 1}.</Text>
-                      <Text
-                        flexShrink={1} // Allow the text to shrink if necessary
-                        flexWrap="wrap" // Enable text wrapping
-                        fontWeight='black'
-                        fontSize='xl'
-                      >
-                        {item.name}
-                      </Text>
+                      <Image
+                        source={{ uri: item.image }}
+                        boxSize={'45px'}
+                        resizeMode="cover"
+                        alt="Album Art"
+                        borderRadius={2}
+                        marginRight={2}
+                      />
+                      <Text mr={1} fontWeight='bold' fontSize='lg'>{index + 1}.</Text>
+
+                      <VStack flex={1}>
+                        <Text
+                          flexShrink={1} // Allow the text to shrink if necessary
+                          fontWeight="black"
+                          fontSize="lg"
+                        >
+                          {item.name}
+                        </Text>
+                        <Text fontSize={'sm'}>
+                          Tracks: {item.tracks.length}
+                        </Text>
+                      </VStack>
+
                     </HStack>
                     <Image
                       source={require('../assets/Spotify_Icon_CMYK_Black.png')}
@@ -73,4 +105,4 @@ function TopArtists({ topArtists }) {
   );
 };
 
-export default React.memo(TopArtists);
+export default React.memo(TopAlbums);

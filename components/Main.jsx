@@ -4,8 +4,9 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, clear } from '../utils/asyncStorage';
 import TopArtists from './TopArtists';
 import TopTracks from './TopTracks';
+import TopAlbums from './TopAlbums';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Create a bottom tab navigator
 const Tab = createBottomTabNavigator();
@@ -81,6 +82,68 @@ export default function Main({ navigation }) {
           return Promise.all([shortTermArtists, mediumTermArtists, longTermArtists, shortTermTracks, mediumTermTracks, longTermTracks]);
         })
         .then(([shortTermArtists, mediumTermArtists, longTermArtists, shortTermTracks, mediumTermTracks, longTermTracks]) => {
+          // Reduce the top artists data to only the artist names, images, ids, and urls
+          shortTermArtists.items = shortTermArtists.items.map((artist) => {
+            return {
+              name: artist.name,
+              image: artist.images[0].url,
+              id: artist.id,
+              url: artist.external_urls.spotify,
+            };
+          });
+          mediumTermArtists.items = mediumTermArtists.items.map((artist) => {
+            return {
+              name: artist.name,
+              image: artist.images[0].url,
+              id: artist.id,
+              url: artist.external_urls.spotify,
+            };
+          });
+          longTermArtists.items = longTermArtists.items.map((artist) => {
+            return {
+              name: artist.name,
+              image: artist.images[0].url,
+              id: artist.id,
+              url: artist.external_urls.spotify,
+            };
+          });
+          // Reduce the top tracks data to only the track names, artists, images, ids, and urls
+          shortTermTracks.items = shortTermTracks.items.map((track) => {
+            return {
+              name: track.name,
+              artists: track.artists.map((artist) => artist.name).join(', '),
+              image: track.album.images[0].url,
+              id: track.id,
+              url: track.external_urls.spotify,
+              albumName: track.album.name,
+              albumId: track.album.id,
+            };
+          });
+          mediumTermTracks.items = mediumTermTracks.items.map((track) => {
+            return {
+              name: track.name,
+              artists: track.artists.map((artist) => artist.name).join(', '),
+              image: track.album.images[0].url,
+              id: track.id,
+              url: track.external_urls.spotify,
+              albumName: track.album.name,
+              albumId: track.album.id,
+            };
+          });
+          longTermTracks.items = longTermTracks.items.map((track) => {
+            return {
+              name: track.name,
+              artists: track.artists.map((artist) => artist.name).join(', '),
+              image: track.album.images[0].url,
+              id: track.id,
+              url: track.external_urls.spotify,
+              albumName: track.album.name,
+              albumId: track.album.id,
+              albumTotalTracks: track.album.total_tracks,
+            };
+          });
+
+          
           // Set top artists data in state
           setTopArtists({
             short_term: shortTermArtists,
@@ -131,6 +194,16 @@ export default function Main({ navigation }) {
         }}
       >
         {props => <TopTracks {...props} topTracks={topTracks} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Top Albums"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="compact-disc" color={color} size={size} />
+          ),
+        }}
+      >
+        {props => <TopAlbums {...props} topTracks={topTracks} />}
       </Tab.Screen>
 
     </Tab.Navigator>
