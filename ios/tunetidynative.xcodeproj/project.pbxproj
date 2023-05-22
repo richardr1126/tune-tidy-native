@@ -170,7 +170,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = V3R4BHR83N;
+						DevelopmentTeam = Z3K8YSF8KR;
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
 					};
@@ -360,7 +360,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = V3R4BHR83N;
+				DEVELOPMENT_TEAM = Z3K8YSF8KR;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -398,7 +398,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = V3R4BHR83N;
+				DEVELOPMENT_TEAM = Z3K8YSF8KR;
 				INFOPLIST_FILE = tunetidynative/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tune Tidy";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
