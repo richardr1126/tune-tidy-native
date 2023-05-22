@@ -23,6 +23,7 @@ function TopTracks({ topTracks }) {
         ? (
           <FlatList
             mt={2}
+            mb={'15px'}
             data={topTracks[timeRange].items}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (

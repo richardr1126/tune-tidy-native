@@ -24,6 +24,7 @@ function TopArtists({ topArtists }) {
         ? (
           <FlatList
             mt={2}
+            mb={'15px'}
             data={topArtists[timeRange].items}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (

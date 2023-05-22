@@ -5,6 +5,7 @@ import { getData, clear } from '../utils/asyncStorage';
 import TopArtists from './TopArtists';
 import TopTracks from './TopTracks';
 import TopAlbums from './TopAlbums';
+import PlaylistEditor from './PlaylistEditor';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -209,6 +210,16 @@ export default function Main({ navigation }) {
         }}
       >
         {props => <TopAlbums {...props} topTracks={topTracks} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Playlist Editor"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="edit" color={color} size={size} />
+          ),
+        }}
+      >
+        {props => <PlaylistEditor {...props} user={user} playlistData={playlistData} />}
       </Tab.Screen>
 
     </Tab.Navigator>
