@@ -117,6 +117,8 @@ export default function Main({ navigation }) {
               url: track.external_urls.spotify,
               albumName: track.album.name,
               albumId: track.album.id,
+              albumTotalTracks: track.album.total_tracks,
+              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
             };
           });
           mediumTermTracks.items = mediumTermTracks.items.map((track) => {
@@ -128,6 +130,8 @@ export default function Main({ navigation }) {
               url: track.external_urls.spotify,
               albumName: track.album.name,
               albumId: track.album.id,
+              albumTotalTracks: track.album.total_tracks,
+              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
             };
           });
           longTermTracks.items = longTermTracks.items.map((track) => {
@@ -140,6 +144,7 @@ export default function Main({ navigation }) {
               albumName: track.album.name,
               albumId: track.album.id,
               albumTotalTracks: track.album.total_tracks,
+              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
             };
           });
 
@@ -174,7 +179,7 @@ export default function Main({ navigation }) {
 
 
   if (checkDataFetched) return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: '#1DB954', tabBarInactiveTintColor: '#000000', tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 10 }, headerShown: false }}>
+    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: '#1DB954', tabBarInactiveTintColor: 'grey', tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 10 }, headerShown: false }}>
       <Tab.Screen
         name="Top Artists"
         options={{
