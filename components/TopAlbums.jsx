@@ -19,7 +19,8 @@ function TopAlbums({ topTracks }) {
         url: item.url,
         tracks: [item],
         id: item.albumId,
-        totalTracks: item.albumTotalTracks
+        totalTracks: item.albumTotalTracks,
+        artists: item.albumArtists
       };
     } else {
       acc[item.albumId].tracks.push(item);
@@ -27,8 +28,8 @@ function TopAlbums({ topTracks }) {
     return acc;
   }, {});
 
-  // Sorting albums by the number of tracks in descending order
-  const sortedTopAlbums = Object.values(topAlbums).sort((a, b) => b.tracks.length - a.tracks.length);
+  // Sorting albums with totalTracks > 5 by the number of tracks in descending order
+  const sortedTopAlbums = Object.values(topAlbums)?.filter((album) => album.totalTracks >= 6)?.sort((a, b) => b.tracks.length - a.tracks.length);
 
   return (
     <VStack my={'50px'} mx={'25px'}>
@@ -43,6 +44,7 @@ function TopAlbums({ topTracks }) {
         ? (
           <FlatList
             mt={2}
+            mb={'15px'}
             data={sortedTopAlbums}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
@@ -75,7 +77,7 @@ function TopAlbums({ topTracks }) {
                           {item.name}
                         </Text>
                         <Text fontSize={'sm'}>
-                          Tracks: {item.tracks.length}
+                          {item.artists}
                         </Text>
                       </VStack>
 
