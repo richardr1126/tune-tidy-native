@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Container, Select, Heading, Text, Center, Spinner, Box, VStack, FlatList, HStack, Image, Avatar, Pressable } from "native-base";
 import * as Linking from 'expo-linking';
+
+const spotifyLogo = require('../assets/Spotify_Icon_CMYK_Black.png');
 
 function TopArtists({ topArtists }) {
   const [timeRange, setTimeRange] = React.useState("medium_term");
@@ -11,12 +13,35 @@ function TopArtists({ topArtists }) {
   ];
 
 
+  const renderItem = useCallback(({ item, index }) => {
+    const onPress = () => Linking.openURL(item.url);
+
+    return (
+      <Pressable onPress={onPress}>
+        {({ isPressed }) => (
+          <Container my={1} shadow={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
+            transform: [{
+              scale: isPressed ? 0.98 : 1,
+            }]
+          }}>
+            <HStack alignItems="center">
+              <Avatar mr={2} size="md" source={{ uri: item.image }} />
+              <Text mr={1} fontWeight='bold' fontSize='xl'>{index + 1}.</Text>
+              <Text flexShrink={1} flexWrap="wrap" fontWeight='black' fontSize='xl'>{item.name}</Text>
+            </HStack>
+            <Image source={spotifyLogo} alt="Spotify Logo" boxSize={'15px'} position={'absolute'} top={2} right={2} />
+          </Container>
+        )}
+      </Pressable>
+    );
+  }, []);
+
   return (
     <VStack my={'50px'} mx={'25px'}>
       <Heading>Top Artists</Heading>
-      <Select selectedValue={timeRange} minWidth={200} maxWidth={200} accessibilityLabel="Choose Time Range" placeholder="Choose Time Range" mt={1} onValueChange={itemValue => setTimeRange(itemValue)} bg={'white'}>
-        {timeRanges.map((timeRange) => (
-          <Select.Item label={timeRange.label} value={timeRange.value} key={timeRange.value} borderRadius={'sm'} />
+      <Select selectedValue={timeRange} minWidth={200} maxWidth={200} accessibilityLabel="Choose Time Range" placeholder="Choose Time Range" mt={1} onValueChange={setTimeRange} bg={'white'}>
+        {timeRanges.map(({ label, value }) => (
+          <Select.Item label={label} value={value} key={value} borderRadius={'sm'} />
         ))}
       </Select>
 
@@ -27,40 +52,7 @@ function TopArtists({ topArtists }) {
             mb={'15px'}
             data={topArtists[timeRange].items}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <Pressable onPress={() => Linking.openURL(item.url)}>
-                {({
-                  isPressed
-                }) => {
-                  return <Container my={1} shadow={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
-                    transform: [{
-                      scale: isPressed ? 0.98 : 1,
-                    }]
-                  }}>
-                    <HStack alignItems="center">
-                      <Avatar mr={2} size="md" source={{ uri: item.image }} />
-                      <Text mr={1} fontWeight='bold' fontSize='xl'>{index + 1}.</Text>
-                      <Text
-                        flexShrink={1} // Allow the text to shrink if necessary
-                        flexWrap="wrap" // Enable text wrapping
-                        fontWeight='black'
-                        fontSize='xl'
-                      >
-                        {item.name}
-                      </Text>
-                    </HStack>
-                    <Image
-                      source={require('../assets/Spotify_Icon_CMYK_Black.png')}
-                      alt="Spotify Logo"
-                      boxSize={'15px'}
-                      position={'absolute'}
-                      top={2}
-                      right={2}
-                    />
-                  </Container>;
-                }}
-              </Pressable>
-            )}
+            renderItem={renderItem}
             keyExtractor={item => item.id}
           />
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, clear } from '../utils/asyncStorage';
@@ -40,146 +40,87 @@ export default function Main({ navigation }) {
     navigation.navigate('Landing');
   }
 
-  useEffect(() => {
-    setAccessToken().then(() => {
-      // Fetch user and initial playlists data
-      const userData = spotify.getMe();
-      const playlistData = spotify.getUserPlaylists({ limit: 50 });
-  
-      Promise.all([userData, playlistData])
-        .then(([user, data]) => {
-          // Set user data in state
-          setUser(user);
-          console.log(user);
-  
-          if (data.total === 50) { 
-            // If there are more than 50 playlists, fetch the remaining playlists
-            return spotify.getUserPlaylists({ limit: 50, offset: 50 })
-              .then((data2) => {
-                console.log('More playlists: ', data2);
-                // Combine data and data2 to get all playlists
-                const combinedData = data.items.concat(data2.items);
-                data.items = combinedData;
-                return data; // Return data for the next step
-              });
-          } else {
-            // If there are less than 50 playlists, return data as is
-            return data;
-          }
-        })
-        .then((playlistData) => {
-          // Set playlist data in state
-          setPlaylistData(playlistData);
-    
-          // Fetch the top artists
-          const shortTermArtists = spotify.getMyTopArtists({ time_range: 'short_term', limit: 50 });
-          const mediumTermArtists = spotify.getMyTopArtists({ time_range: 'medium_term', limit: 50 });
-          const longTermArtists = spotify.getMyTopArtists({ time_range: 'long_term', limit: 50 });
-          //Fetch the top tracks
-          const shortTermTracks = spotify.getMyTopTracks({ time_range: 'short_term', limit: 50 });
-          const mediumTermTracks = spotify.getMyTopTracks({ time_range: 'medium_term', limit: 50 });
-          const longTermTracks = spotify.getMyTopTracks({ time_range: 'long_term', limit: 50 });
-    
-          return Promise.all([shortTermArtists, mediumTermArtists, longTermArtists, shortTermTracks, mediumTermTracks, longTermTracks]);
-        })
-        .then(([shortTermArtists, mediumTermArtists, longTermArtists, shortTermTracks, mediumTermTracks, longTermTracks]) => {
-          // Reduce the top artists data to only the artist names, images, ids, and urls
-          shortTermArtists.items = shortTermArtists.items.map((artist) => {
-            return {
-              name: artist.name,
-              image: artist.images[0].url,
-              id: artist.id,
-              url: artist.external_urls.spotify,
-            };
-          });
-          mediumTermArtists.items = mediumTermArtists.items.map((artist) => {
-            return {
-              name: artist.name,
-              image: artist.images[0].url,
-              id: artist.id,
-              url: artist.external_urls.spotify,
-            };
-          });
-          longTermArtists.items = longTermArtists.items.map((artist) => {
-            return {
-              name: artist.name,
-              image: artist.images[0].url,
-              id: artist.id,
-              url: artist.external_urls.spotify,
-            };
-          });
-          // Reduce the top tracks data to only the track names, artists, images, ids, and urls
-          shortTermTracks.items = shortTermTracks.items.map((track) => {
-            return {
-              name: track.name,
-              artists: track.artists.map((artist) => artist.name).join(', '),
-              image: track.album.images[0].url,
-              id: track.id,
-              url: track.external_urls.spotify,
-              albumName: track.album.name,
-              albumId: track.album.id,
-              albumTotalTracks: track.album.total_tracks,
-              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
-            };
-          });
-          mediumTermTracks.items = mediumTermTracks.items.map((track) => {
-            return {
-              name: track.name,
-              artists: track.artists.map((artist) => artist.name).join(', '),
-              image: track.album.images[0].url,
-              id: track.id,
-              url: track.external_urls.spotify,
-              albumName: track.album.name,
-              albumId: track.album.id,
-              albumTotalTracks: track.album.total_tracks,
-              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
-            };
-          });
-          longTermTracks.items = longTermTracks.items.map((track) => {
-            return {
-              name: track.name,
-              artists: track.artists.map((artist) => artist.name).join(', '),
-              image: track.album.images[0].url,
-              id: track.id,
-              url: track.external_urls.spotify,
-              albumName: track.album.name,
-              albumId: track.album.id,
-              albumTotalTracks: track.album.total_tracks,
-              albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
-            };
-          });
+  const extractArtistData = (artist) => ({
+    name: artist.name,
+    image: artist.images[0].url,
+    id: artist.id,
+    url: artist.external_urls.spotify,
+  });
 
-          
-          // Set top artists data in state
-          setTopArtists({
-            short_term: shortTermArtists,
-            medium_term: mediumTermArtists,
-            long_term: longTermArtists,
-          });
-          setTopTracks({
-            short_term: shortTermTracks,
-            medium_term: mediumTermTracks,
-            long_term: longTermTracks,
-          });
-        })
-        .catch((error) => {
-          console.log("Error fetching data:", error);
-          // If there's an error, redirect user to login page
-          redirectLogin();
+  const extractTrackData = (track) => ({
+    name: track.name,
+    artists: track.artists.map((artist) => artist.name).join(', '),
+    image: track.album.images[0].url,
+    id: track.id,
+    url: track.external_urls.spotify,
+    albumName: track.album.name,
+    albumId: track.album.id,
+    albumTotalTracks: track.album.total_tracks,
+    albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
+  });
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await setAccessToken();
+        const userData = await spotify.getMe();
+        let playlistData = await spotify.getUserPlaylists({ limit: 50 });
+  
+        if (playlistData.total === 50) { 
+          const data2 = await spotify.getUserPlaylists({ limit: 50, offset: 50 });
+          const combinedData = playlistData.items.concat(data2.items);
+          playlistData.items = combinedData;
+        }
+  
+        setPlaylistData(playlistData);
+        setUser(userData);
+  
+        const shortTermArtists = await spotify.getMyTopArtists({ time_range: 'short_term', limit: 50 });
+        const mediumTermArtists = await spotify.getMyTopArtists({ time_range: 'medium_term', limit: 50 });
+        const longTermArtists = await spotify.getMyTopArtists({ time_range: 'long_term', limit: 50 });
+  
+        const shortTermTracks = await spotify.getMyTopTracks({ time_range: 'short_term', limit: 50 });
+        const mediumTermTracks = await spotify.getMyTopTracks({ time_range: 'medium_term', limit: 50 });
+        const longTermTracks = await spotify.getMyTopTracks({ time_range: 'long_term', limit: 50 });
+  
+        setTopArtists({
+          short_term: { items: shortTermArtists.items.map(extractArtistData) },
+          medium_term: { items: mediumTermArtists.items.map(extractArtistData) },
+          long_term: { items: longTermArtists.items.map(extractArtistData) },
         });
-    });
+        
+        setTopTracks({
+          short_term: { items: shortTermTracks.items.map(extractTrackData) },
+          medium_term: { items: mediumTermTracks.items.map(extractTrackData) },
+          long_term: { items: longTermTracks.items.map(extractTrackData) },
+        });
+  
+      } catch (error) {
+        console.log("Error fetching data:", error);
+        redirectLogin();
+      }
+    }
+  
+    fetchData();
   }, []);
   
-  const checkDataFetched = () => {
-    if (user && playlistData && topArtists.short_term && topArtists.medium_term && topArtists.long_term && topTracks.short_term && topTracks.medium_term && topTracks.long_term) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
+  const dataFetched = useMemo(() => (
+    user && 
+    playlistData && 
+    topArtists.short_term && 
+    topArtists.medium_term && 
+    topArtists.long_term && 
+    topTracks.short_term && 
+    topTracks.medium_term && 
+    topTracks.long_term
+  ), [user, playlistData, topArtists, topTracks]);
+  
 
 
-  if (checkDataFetched) return (
+  if (dataFetched) return (
     <Tab.Navigator screenOptions={{ tabBarActiveTintColor: '#1DB954', tabBarInactiveTintColor: 'grey', tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 10 }, headerShown: false }}>
       <Tab.Screen
         name="Top Artists"
