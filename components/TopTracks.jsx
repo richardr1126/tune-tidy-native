@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Container, Select, Heading, Text, Center, Spinner, Box, VStack, FlatList, HStack, Image, Avatar, Pressable } from "native-base";
+import React from 'react';
+import { Container, Select, Heading, Text, Center, Spinner, VStack, FlatList, HStack, Image, Pressable } from "native-base";
 import * as Linking from 'expo-linking';
 
 function TopTracks({ topTracks }) {
