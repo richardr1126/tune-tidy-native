@@ -7,7 +7,7 @@ function TopTracks({ topTracks }) {
   const timeRanges = [
     { label: "Last Month", value: "short_term" },
     { label: "Last 6 Months", value: "medium_term" },
-    { label: "All Time", value: "long_term" },
+    { label: "All Time", value: "long_term" }
   ];
 
   return (
@@ -26,7 +26,7 @@ function TopTracks({ topTracks }) {
             data={topTracks[timeRange].items}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
-              <Pressable onPress={() => Linking.openURL(item.external_urls.spotify)}>
+              <Pressable onPress={() => Linking.openURL(item.url)}>
                 {({
                   isPressed
                 }) => {
@@ -37,7 +37,7 @@ function TopTracks({ topTracks }) {
                   }}>
                     <HStack alignItems="center">
                       <Image
-                        source={{ uri: item.album.images[0].url }}
+                        source={{ uri: item.image }}
                         boxSize={'45px'}
                         resizeMode="cover"
                         alt="Album Art"
@@ -55,7 +55,7 @@ function TopTracks({ topTracks }) {
                           {item.name}
                         </Text>
                         <Text fontSize={'sm'}>
-                          {item.artists.map((artist) => artist.name).join(', ')}
+                          {item.artists}
                         </Text>
                       </VStack>
 

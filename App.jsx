@@ -32,6 +32,8 @@ export default function App() {
 
   useEffect(() => {
     checkTokenExpiration();
+    //console.log(REACT_APP_NODE_ENV);
+    //console.log(Linking.createURL());
   }, []);
 
   if (isLoading) {
