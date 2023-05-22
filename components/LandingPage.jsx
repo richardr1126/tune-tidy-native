@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import { REACT_APP_NODE_ENV, REACT_APP_SPOTIFY_CLIENT_ID, REACT_APP_SPOTIFY_CLIENT_SECRET } from '@env';
 import Icon from 'react-native-vector-icons/FontAwesome';

@@ -16,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tunetidy.native"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +28,11 @@
     },
     "web": {
       "favicon": "./assets/large-logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2fe83fd6-d846-4cfa-8c7a-1db0672815ad"
+      }
     }
   }
 }
