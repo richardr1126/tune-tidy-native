@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, clear } from '../../utils/asyncStorage';
 import TopArtists from './tabs/TopArtists';
 import TopTracks from './tabs/TopTracks';
 import TopAlbums from './tabs/TopAlbums';
-import PlaylistEditor from './tabs/PlaylistEditor';
+import PlaylistRouter from './tabs/PlaylistRouter';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Container } from 'native-base';
 
 // Create a bottom tab navigator
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 const spotify = new SpotifyWebApi();
 
 // Define the main tabs component
@@ -67,67 +68,79 @@ export default function Main({ navigation }) {
         await setAccessToken();
         const userData = await spotify.getMe();
         let playlistData = await spotify.getUserPlaylists({ limit: 50 });
-  
-        if (playlistData.total === 50) { 
+
+        if (playlistData.total === 50) {
           const data2 = await spotify.getUserPlaylists({ limit: 50, offset: 50 });
           const combinedData = playlistData.items.concat(data2.items);
           playlistData.items = combinedData;
         }
-  
+
         setPlaylistData(playlistData);
         setUser(userData);
-  
+
         const shortTermArtists = await spotify.getMyTopArtists({ time_range: 'short_term', limit: 50 });
         const mediumTermArtists = await spotify.getMyTopArtists({ time_range: 'medium_term', limit: 50 });
         const longTermArtists = await spotify.getMyTopArtists({ time_range: 'long_term', limit: 50 });
-  
+
         const shortTermTracks = await spotify.getMyTopTracks({ time_range: 'short_term', limit: 50 });
         const mediumTermTracks = await spotify.getMyTopTracks({ time_range: 'medium_term', limit: 50 });
         const longTermTracks = await spotify.getMyTopTracks({ time_range: 'long_term', limit: 50 });
-  
+
         setTopArtists({
           short_term: { items: shortTermArtists.items.map(extractArtistData) },
           medium_term: { items: mediumTermArtists.items.map(extractArtistData) },
           long_term: { items: longTermArtists.items.map(extractArtistData) },
         });
-        
+
         setTopTracks({
           short_term: { items: shortTermTracks.items.map(extractTrackData) },
           medium_term: { items: mediumTermTracks.items.map(extractTrackData) },
           long_term: { items: longTermTracks.items.map(extractTrackData) },
         });
-  
+
       } catch (error) {
         console.log("Error fetching data:", error);
         redirectLogin();
       }
     }
-  
+
     fetchData();
-    
+
   }, []);
-  
+
 
   const dataFetched = useMemo(() => (
-    user && 
-    playlistData && 
-    topArtists.short_term && 
-    topArtists.medium_term && 
-    topArtists.long_term && 
-    topTracks.short_term && 
-    topTracks.medium_term && 
+    user &&
+    playlistData &&
+    topArtists.short_term &&
+    topArtists.medium_term &&
+    topArtists.long_term &&
+    topTracks.short_term &&
+    topTracks.medium_term &&
     topTracks.long_term
   ), [user, playlistData, topArtists, topTracks]);
-  
+
 
 
   if (dataFetched) return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: '#1DB954', tabBarInactiveTintColor: 'grey', tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 10 }, headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#1DB954',
+        tabBarInactiveTintColor: 'grey',
+        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 0, paddingTop: 0, paddingBottom: 0, paddingHorizontal: 0 },
+        headerShown: false,
+        swipeEnabled: true,
+        lazy: true,
+        tabBarIndicatorStyle: { backgroundColor: '#1DB954' },
+        tabBarLabelStyle: { fontSize: 10 }, // adjust size of label
+      }}
+      tabBarPosition='bottom'
+    >
       <Tab.Screen
         name="Top Artists"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="users" color={color} size={size} />
+          tabBarIcon: ({ color }) => (
+            <Icon name="users" color={color} size={20} />
           ),
         }}
       >
@@ -136,8 +149,10 @@ export default function Main({ navigation }) {
       <Tab.Screen
         name="Top Tracks"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="list-ol" color={color} size={size} />
+          tabBarIcon: ({ color }) => (
+
+            <Icon name="list-ol" color={color} size={20} />
+
           ),
         }}
       >
@@ -146,23 +161,24 @@ export default function Main({ navigation }) {
       <Tab.Screen
         name="Top Albums"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="compact-disc" color={color} size={size} />
+          tabBarIcon: ({ color }) => (
+            <Icon name="compact-disc" color={color} size={20} />
           ),
         }}
       >
         {props => <TopAlbums {...props} topTracks={topTracks} />}
       </Tab.Screen>
       <Tab.Screen
-        name="Playlist Editor"
+        name="Playlist Sorter"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="edit" color={color} size={size} />
+          tabBarIcon: ({ color }) => (
+            <Icon name="edit" color={color} size={20} />
           ),
         }}
       >
-        {props => <PlaylistEditor {...props} user={user} playlistData={playlistData} />}
+        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} />}
       </Tab.Screen>
+
 
     </Tab.Navigator>
   );

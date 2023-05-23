@@ -1,7 +1,12 @@
 import React from 'react';
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable } from "native-base";
 
-export default function PlaylistSelector({ playlistData, setSelectedPlaylist }) {
+function PlaylistSelector({ playlistData, navigation }) {
+  const handlePress = (item) => {
+    console.log(item);
+    navigation.navigate('Playlist Editor', { selectedPlaylist: item });
+  }
+
   return (
     <VStack mt={'50px'} mb={'25px'} mx={'25px'}>
       <Heading>Choose a playlist to sort</Heading>
@@ -11,7 +16,7 @@ export default function PlaylistSelector({ playlistData, setSelectedPlaylist }) 
         data={playlistData.items}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Pressable onPress={() => setSelectedPlaylist(item)}>
+          <Pressable onPress={() => handlePress(item)}>
             {({
               isPressed
             }) => {
@@ -48,3 +53,5 @@ export default function PlaylistSelector({ playlistData, setSelectedPlaylist }) 
     </VStack>
   );
 }
+
+export default React.memo(PlaylistSelector);

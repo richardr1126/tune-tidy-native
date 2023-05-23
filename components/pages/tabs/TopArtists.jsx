@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Heading, Center, Spinner, VStack, FlatList } from "native-base";
+import { Select, Heading, Center, Spinner, VStack, FlatList, Box } from "native-base";
 import ArtistCard from '../../cards/ArtistCard';
 
 function TopArtists({ topArtists }) {
@@ -26,6 +26,7 @@ function TopArtists({ topArtists }) {
             mb={'15px'}
             data={topArtists[timeRange].items}
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={<Box height={10}/>}
             renderItem={({ item, index }) => <ArtistCard item={item} index={index} />}
             keyExtractor={item => item.id}
           />

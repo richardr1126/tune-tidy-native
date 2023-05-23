@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Heading, Center, Spinner, VStack, FlatList } from "native-base";
+import { Select, Heading, Center, Spinner, VStack, FlatList, Box } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 
 const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Black.png');
@@ -28,6 +28,7 @@ function TopTracks({ topTracks }) {
             mb={'15px'}
             data={topTracks[timeRange].items}
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={<Box height={10}/>}
             renderItem={({ item, index }) => (
               <GenericCard item={item} index={index} spotifyLogo={spotifyLogo} />
             )}
