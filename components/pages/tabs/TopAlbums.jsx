@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
-import { Container, Select, Heading, Text, Center, Spinner, VStack, FlatList, HStack, Image, Pressable } from "native-base";
-import * as Linking from 'expo-linking';
+import React, { useMemo } from 'react';
+import { Select, Heading, Center, Spinner, VStack, FlatList } from "native-base";
+import GenericCard from '../../cards/GenericCard';
 
-const spotifyLogo = require('../assets/Spotify_Icon_CMYK_Black.png');
+const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Black.png');
 
 function TopAlbums({ topTracks }) {
   const [timeRange, setTimeRange] = React.useState("medium_term");
@@ -33,49 +33,6 @@ function TopAlbums({ topTracks }) {
     return Object.values(topAlbums)?.filter((album) => album.totalTracks >= 6)?.sort((a, b) => b.tracks.length - a.tracks.length);
   }, [topTracks, timeRange]);
 
-  const renderItem = useCallback(({ item, index }) => {
-    const onPress = () => Linking.openURL(item.url);
-
-    return (
-      <Pressable onPress={onPress}>
-        {({ isPressed }) => (
-          <Container my={1} shadow={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
-            transform: [{
-              scale: isPressed ? 0.98 : 1,
-            }]
-          }}>
-            <HStack alignItems="center">
-              <Image
-                source={{ uri: item.image }}
-                boxSize={'45px'}
-                resizeMode="cover"
-                alt="Album Art"
-                borderRadius={2}
-                marginRight={2}
-              />
-              <Text mr={1} fontWeight='bold' fontSize='lg'>{index + 1}.</Text>
-
-              <VStack flex={1}>
-                <Text
-                  flexShrink={1} // Allow the text to shrink if necessary
-                  fontWeight="black"
-                  fontSize="lg"
-                >
-                  {item.name}
-                </Text>
-                <Text fontSize={'sm'}>
-                  {item.artists}
-                </Text>
-              </VStack>
-
-            </HStack>
-            <Image source={spotifyLogo} alt="Spotify Logo" boxSize={'15px'} position={'absolute'} top={2} right={2} />
-          </Container>
-        )}
-      </Pressable>
-    );
-  }, []);
-
   return (
     <VStack my={'50px'} mx={'25px'}>
       <Heading>Top Albums</Heading>
@@ -92,7 +49,9 @@ function TopAlbums({ topTracks }) {
             mb={'15px'}
             data={sortedTopAlbums}
             showsVerticalScrollIndicator={false}
-            renderItem={renderItem}
+            renderItem={({ item, index }) => (
+              <GenericCard item={item} index={index} spotifyLogo={spotifyLogo} />
+            )}
             keyExtractor={item => item.id}
           />
 

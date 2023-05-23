@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData, clear } from '../utils/asyncStorage';
-import TopArtists from './TopArtists';
-import TopTracks from './TopTracks';
-import TopAlbums from './TopAlbums';
-import PlaylistEditor from './PlaylistEditor';
+import { getData, clear } from '../../utils/asyncStorage';
+import TopArtists from './tabs/TopArtists';
+import TopTracks from './tabs/TopTracks';
+import TopAlbums from './tabs/TopAlbums';
+import PlaylistEditor from './tabs/PlaylistEditor';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -104,6 +104,7 @@ export default function Main({ navigation }) {
     }
   
     fetchData();
+    
   }, []);
   
 

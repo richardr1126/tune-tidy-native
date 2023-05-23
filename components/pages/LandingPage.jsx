@@ -7,17 +7,15 @@ import {
   SafeAreaView,
   StyleSheet,
 } from 'react-native';
-import { REACT_APP_NODE_ENV, REACT_APP_SPOTIFY_CLIENT_ID, REACT_APP_SPOTIFY_CLIENT_SECRET } from '@env';
+import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Linking from 'expo-linking'
-import { storeData, getData } from '../utils/asyncStorage';
+import { storeData, getData } from '../../utils/asyncStorage';
 
 function LandingPage({ navigation }) {
   // Add your CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE, and SCOPES here
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
-  const REDIRECT_URI = REACT_APP_NODE_ENV === 'dev'
-    ? 'exp://192.168.0.25:19000'
-    : Linking.createURL();
+  const REDIRECT_URI = Linking.createURL();
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
   const SCOPES = [
@@ -30,7 +28,7 @@ function LandingPage({ navigation }) {
   ].join("%20");
 
   const handleLoginButtonPress = async () => {
-    //console.log(REDIRECT_URI);
+    console.log(REDIRECT_URI);
     Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
     Linking.addEventListener('url', async (event) => {
       //console.log(event.url);
@@ -59,6 +57,8 @@ function LandingPage({ navigation }) {
     // If tokenExpiration is not null, automatically call handleLoginButtonPress
     // to refresh the token if it has expired
     checkTokenExpiration();
+    //check if device is in dark mode
+    
   }, []);
 
   return (
@@ -67,7 +67,7 @@ function LandingPage({ navigation }) {
         <View style={styles.logoContainer}>
           <Image
             style={styles.logo}
-            source={require('../assets/large-logo.png')}
+            source={require('../../assets/large-logo.png')}
           />
           <Text style={styles.title}>TuneTidy</Text>
         </View>
@@ -110,7 +110,7 @@ function LandingPage({ navigation }) {
           <Text style={styles.loginButtonText}>Login with</Text>
           <Image
             style={styles.spotifyLogo}
-            source={require('../assets/Spotify_Logo_CMYK_Black.png')}
+            source={require('../../assets/Spotify_Logo_CMYK_Black.png')}
           />
         </TouchableOpacity>
       </View>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 10,
     padding: 15,
     backgroundColor: '#1DB954',
     borderRadius: 10,

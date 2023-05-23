@@ -15,11 +15,10 @@
     "preview": {
       "distribution": "internal",
       "ios": {
-        "buildConfiguration": "Debug",
         "simulator": true
       },
       "env": {
-        "REACT_APP_NODE_ENV": "production",
+        "REACT_APP_NODE_ENV": "ios",
         "REACT_APP_SPOTIFY_CLIENT_ID": "ad262abcde7048a29f081c4a5d8bbbd3",
         "REACT_APP_SPOTIFY_CLIENT_SECRET": "f3d5a00ab7204a2a9b3bdf973cc9b2d9"
       }

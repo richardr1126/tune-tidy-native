@@ -5,8 +5,8 @@ import { NativeBaseProvider } from "native-base";
 import { getData } from './utils/asyncStorage';
 
 // Import your screens
-import LandingPage from './components/LandingPage';
-import Main from './components/Main';
+import LandingPage from './components/pages/LandingPage';
+import Main from './components/pages/Main';
 
 // Create a stack navigator
 const Stack = createStackNavigator();
