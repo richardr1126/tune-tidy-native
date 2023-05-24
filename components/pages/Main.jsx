@@ -8,7 +8,6 @@ import TopAlbums from './tabs/TopAlbums';
 import PlaylistRouter from './tabs/PlaylistRouter';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { Container } from 'native-base';
 
 // Create a bottom tab navigator
 const Tab = createMaterialTopTabNavigator();

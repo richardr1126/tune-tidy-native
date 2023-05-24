@@ -11,7 +11,7 @@ import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser';
-import { storeData, getData, clear } from '../../utils/asyncStorage';
+import { storeData, getData } from '../../utils/asyncStorage';
 
 function LandingPage({ navigation }) {
   // Add your CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE, and SCOPES here

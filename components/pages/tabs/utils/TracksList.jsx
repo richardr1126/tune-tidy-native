@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, FlatList } from "native-base";
+import { Box } from "native-base";
 import { Animated } from 'react-native';
 import PlaylistTrackCard from '../../../cards/PlaylistTrackCard';
 
