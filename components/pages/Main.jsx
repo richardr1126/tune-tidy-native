@@ -127,17 +127,18 @@ export default function Main({ navigation }) {
       screenOptions={{
         tabBarActiveTintColor: '#1DB954',
         tabBarInactiveTintColor: 'grey',
-        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0, shadowOpacity: 0, paddingTop: 0, paddingTop: 0, paddingBottom: 0, paddingHorizontal: 0 },
+        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0.15, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 0 },
         headerShown: false,
         swipeEnabled: true,
         lazy: true,
+        tabBarIconStyle: { justifyContent: 'center', alignItems: 'center' },
         tabBarIndicatorStyle: { backgroundColor: '#1DB954' },
         tabBarLabelStyle: { fontSize: 10 }, // adjust size of label
       }}
       tabBarPosition='bottom'
     >
       <Tab.Screen
-        name="Top Artists"
+        name="Artists"
         options={{
           tabBarIcon: ({ color }) => (
             <Icon name="users" color={color} size={20} />
@@ -147,7 +148,7 @@ export default function Main({ navigation }) {
         {props => <TopArtists {...props} topArtists={topArtists} />}
       </Tab.Screen>
       <Tab.Screen
-        name="Top Tracks"
+        name="Tracks"
         options={{
           tabBarIcon: ({ color }) => (
 
@@ -159,7 +160,7 @@ export default function Main({ navigation }) {
         {props => <TopTracks {...props} topTracks={topTracks} />}
       </Tab.Screen>
       <Tab.Screen
-        name="Top Albums"
+        name="Albums"
         options={{
           tabBarIcon: ({ color }) => (
             <Icon name="compact-disc" color={color} size={20} />
@@ -169,7 +170,7 @@ export default function Main({ navigation }) {
         {props => <TopAlbums {...props} topTracks={topTracks} />}
       </Tab.Screen>
       <Tab.Screen
-        name="Playlist Sorter"
+        name="Sorter"
         options={{
           tabBarIcon: ({ color }) => (
             <Icon name="edit" color={color} size={20} />

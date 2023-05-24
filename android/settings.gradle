@@ -1,4 +1,4 @@
-rootProject.name = 'tune-tidy-native'
+rootProject.name = 'TuneTidy'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
 useExpoModules()

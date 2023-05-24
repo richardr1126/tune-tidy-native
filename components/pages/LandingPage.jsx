@@ -10,7 +10,8 @@ import {
 import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Linking from 'expo-linking'
-import { storeData, getData } from '../../utils/asyncStorage';
+import * as WebBrowser from 'expo-web-browser';
+import { storeData, getData, clear } from '../../utils/asyncStorage';
 
 function LandingPage({ navigation }) {
   // Add your CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE, and SCOPES here
@@ -29,17 +30,35 @@ function LandingPage({ navigation }) {
 
   const handleLoginButtonPress = async () => {
     console.log(REDIRECT_URI);
-    Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
-    Linking.addEventListener('url', async (event) => {
-      //console.log(event.url);
-      const token = event.url.split('#')[1].split('&')[0].split('=')[1];
+
+    // Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
+    // Linking.addEventListener('url', async (event) => {
+    //   //console.log(event.url);
+    //   const token = event.url.split('#')[1].split('&')[0].split('=')[1];
+    //   const tokenExpiration = JSON.stringify(Date.now() + 3600000);
+    //   await storeData('token', token);
+    //   await storeData('tokenExpiration', tokenExpiration);
+    //   console.log(await getData('token'));
+    //   console.log(await getData('tokenExpiration'));
+    //   navigation.navigate('Main');
+    // });
+
+    // Replace with in app broswer
+    const result = await WebBrowser.openAuthSessionAsync(
+      `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`,
+      REDIRECT_URI
+    );
+    console.log(result);
+    if (result.type === 'success') {
+      const token = result.url.split('#')[1].split('&')[0].split('=')[1];
       const tokenExpiration = JSON.stringify(Date.now() + 3600000);
       await storeData('token', token);
       await storeData('tokenExpiration', tokenExpiration);
       console.log(await getData('token'));
       console.log(await getData('tokenExpiration'));
       navigation.navigate('Main');
-    });
+    }
+
 
   };
 
@@ -133,7 +152,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 5,
   },
   logo: {
     width: 80,
@@ -184,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 1,
     padding: 15,
     backgroundColor: '#1DB954',
     borderRadius: 10,

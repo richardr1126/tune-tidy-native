@@ -13,23 +13,31 @@ import {
   Flex,
   Select,
   Spinner,
-
 } from "native-base";
+import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Linking from 'expo-linking';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, clear } from '../../../../utils/asyncStorage';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
-import GenericCard from '../../../cards/GenericCard';
 import TracksList from './TracksList';
 
 const spotify = new SpotifyWebApi();
 
 function PlaylistEditor({ user, route, navigation }) {
   const [sorter, setSorter] = React.useState('original_position');
+  const [sorterDirection, setSorterDirection] = React.useState('asc'); // 'asc', 'desc'
   const [tracks, setTracks] = React.useState(null);
   const selectedPlaylist = route.params.selectedPlaylist;
+
+  const toggleSortDirection = () => {
+    if (sorterDirection === 'asc') {
+      setSorterDirection('desc');
+    } else {
+      setSorterDirection('asc');
+    }
+  }
 
   const handleBackButtonPress = () => {
     //setSelectedPlaylist(null);
@@ -134,6 +142,21 @@ function PlaylistEditor({ user, route, navigation }) {
       });
   }
 
+  // Add this in your PlaylistEditor component
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  // In your PlaylistEditor component
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, 300],
+    outputRange: [0, -300],
+    extrapolate: 'clamp', // This will prevent the value from going beyond the output range
+  });
+  // Define another translateY animation for the rest of the content
+  const contentTranslateY = scrollY.interpolate({
+    inputRange: [0, 180],
+    outputRange: [0, -180],
+    extrapolate: 'clamp',
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -152,80 +175,117 @@ function PlaylistEditor({ user, route, navigation }) {
   }, []);
 
   return (
-    <Flex mt={'55px'} mb={'25px'} mx={'25px'}>
-      <Container>
-        <HStack alignItems="center">
-          <Button onPress={handleBackButtonPress}
-            p={2}
-            mr={2}
-            startIcon={<ChevronLeftIcon color='#5e5e5e' size="5" />}
-            color={'white'}
-            bgColor={'white'}
-            shadow={1}
-            _pressed={{
-              bgColor: 'white',
-              opacity: 0.2
-            }}
-          >
-          </Button>
-          <Heading>{selectedPlaylist.name}</Heading>
-        </HStack>
-      </Container>
-      <Center>
-        <HStack mt={5} alignItems="center">
-          <Container shadow={3}>
-            <Image borderRadius={4} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size='xl' />
-          </Container>
-          {/* Spotify icon button */}
-          <VStack space={1}>
-            <Button onPress={handleSpotifyButtonPress} flex={1} ml={2} p={2} bgColor={'#1DB954'} _pressed={{
-              opacity: 0.5,
-            }}>
-              <HStack space={1} alignItems="center" flex={1}>
-                <Image source={spotifyLogo} alt="Spotify Logo" boxSize={'25px'} />
-                <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
-              </HStack>
+    <>
+      <Box height={'100px'} width={'100%'} position={'absolute'} top={0} left={0} bgColor={'white'} zIndex={1}>
+        <Container mt={'55px'} mb={'25px'} mx={'25px'}>
+          <HStack alignItems="center">
+            <Button onPress={handleBackButtonPress}
+              p={2}
+              mr={2}
+              startIcon={<ChevronLeftIcon color='#5e5e5e' size="5" />}
+              color={'white'}
+              bgColor={'white'}
+              shadow={1}
+              _pressed={{
+                bgColor: 'white',
+                opacity: 0.2
+              }}
+            >
             </Button>
-            <Button flex={1} ml={2} p={2} bgColor={'#e53e3e'} _pressed={{
-              opacity: 0.5,
-            }}>
-              <HStack space={1} alignItems="center">
-                <Icon name="edit" size={20} color="white" />
-                <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
-              </HStack>
-            </Button>
-            <Button variant={'outline'} flex={1} ml={2} p={2} _pressed={{
-              opacity: 0.5,
-            }}>
-              <HStack space={1} alignItems="center">
-                <Icon name="copy" size={20} color="black" />
-                <Text color={'black'} fontWeight={'medium'}>Copy Playlist</Text>
-              </HStack>
-            </Button>
-          </VStack>
-        </HStack>
-      </Center>
-      {/* Sorter selection */}
-      <Text mt={5} mb={'2px'} fontSize={'md'} fontWeight={'medium'}>Sort by:</Text>
-      <Box shadow={'1'}>
-        <Select selectedValue={sorter} size={'lg'} onValueChange={setSorter} minWidth={'100%'} placeholder="Sort by" variant='filled' bgColor={'white'}>
-          <Select.Item label="Current Spotify Postion" value="original_position" borderRadius={4} />
-          <Select.Item label="Alphabetical" value="alphabetical" borderRadius={4} />
-          <Select.Item label="Artist" value="artist" borderRadius={4} />
-          <Select.Item label="Album" value="album" borderRadius={4} />
-          <Select.Item label="Genre" value="genre" borderRadius={4} />
-          <Select.Item label="Year" value="year" borderRadius={4} />
-        </Select>
+            <Heading>{selectedPlaylist.name}</Heading>
+          </HStack>
+        </Container>
       </Box>
-      {/* Tracks */}
-      {tracks ? (
-        <TracksList tracks={tracks} spotifyLogo={spotifyLogo} />
-      ) : (
-        <Center p={20}>
-          <Spinner accessibilityLabel="Loading tracks" color={'grey'} />
-        </Center>
-      )}
-    </Flex>
+      <Flex mt={'90px'} mb={'25px'} mx={'25px'}>
+
+        <Animated.View
+          style={{
+            transform: [{ translateY: headerTranslateY }],
+          }}
+          zIndex={0}
+        >
+          <Center>
+            <HStack mt={5} alignItems="center">
+              <Container shadow={3}>
+                <Image borderRadius={4} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
+              </Container>
+              <VStack space={2}>
+                <Button onPress={handleSpotifyButtonPress} flex={1} ml={2} p={2} bgColor={'#1DB954'} _pressed={{
+                  opacity: 0.5,
+                }}>
+                  <HStack space={1} alignItems="center" flex={1}>
+                    <Image source={spotifyLogo} alt="Spotify Logo" boxSize={'25px'} />
+                    <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
+                  </HStack>
+                </Button>
+                <Button flex={1} ml={2} p={2} bgColor={'#e53e3e'} _pressed={{
+                  opacity: 0.5,
+                }}>
+                  <HStack space={1} alignItems="center">
+                    <Icon name="edit" size={20} color="white" />
+                    <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
+                  </HStack>
+                </Button>
+                <Button variant={'outline'} flex={1} ml={2} p={2} _pressed={{
+                  opacity: 0.5,
+                }}>
+                  <HStack space={1} alignItems="center">
+                    <Icon name="copy" size={20} color="black" />
+                    <Text color={'black'} fontWeight={'medium'}>Copy Playlist</Text>
+                  </HStack>
+                </Button>
+              </VStack>
+            </HStack>
+          </Center>
+        </Animated.View>
+
+        {/* Sorter selection */}
+        <Animated.View
+          style={{
+            transform: [{ translateY: contentTranslateY }],
+          }}
+        >
+          <HStack mb={3} mt={5} alignItems={'center'}>
+            <Select
+              selectedValue={sorter}
+              size={'lg'}
+              flex={1}
+              onValueChange={setSorter}
+              placeholder="Sort by"
+              variant='filled'
+              bgColor={'white'}
+              dropdownIcon={<Icon name="sort" size={20} color={'#5e5e5e'} style={{marginRight: 10}}/>}
+            >
+              <Select.Item label="Current Spotify Postion" value="original_position" borderRadius={4} />
+              <Select.Item label="Alphabetical" value="alphabetical" borderRadius={4} />
+              <Select.Item label="Artist" value="artist" borderRadius={4} />
+              <Select.Item label="Album" value="album" borderRadius={4} />
+              <Select.Item label="Genre" value="genre" borderRadius={4} />
+              <Select.Item label="Year" value="year" borderRadius={4} />
+            </Select>
+            {/* Asc/Desc button */}
+            <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={'white'} _pressed={{
+              opacity: 0.5,
+            }}>
+              {sorterDirection === 'asc' && (<Icon name={"sort-amount-down-alt"} size={20} color={'#5e5e5e'} />)}
+              {sorterDirection === 'desc' && (<Icon name={"sort-amount-down"} size={20} color={'#5e5e5e'} />)}
+            </Button>
+          </HStack>
+          {/* Tracks */}
+          {tracks ? (
+            <TracksList tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
+
+          ) : (
+            <Center p={20}>
+              <Spinner accessibilityLabel="Loading tracks" color={'grey'} />
+            </Center>
+          )}
+        </Animated.View>
+
+
+      </Flex>
+    </>
+
   );
 }
 
