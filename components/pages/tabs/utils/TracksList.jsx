@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box } from "native-base";
 import { Animated } from 'react-native';
 import PlaylistTrackCard from '../../../cards/PlaylistTrackCard';

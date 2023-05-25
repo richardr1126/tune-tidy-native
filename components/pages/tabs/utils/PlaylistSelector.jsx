@@ -1,4 +1,3 @@
-import React from 'react';
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable } from "native-base";
 
 function PlaylistSelector({ playlistData, navigation }) {

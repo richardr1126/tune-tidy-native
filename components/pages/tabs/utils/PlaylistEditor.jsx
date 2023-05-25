@@ -1,15 +1,12 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState, memo, useRef } from 'react';
 import {
   VStack,
-  Heading,
   HStack,
   Button,
-  ChevronLeftIcon,
   Image,
   Container,
   Text,
   Center,
-  Box,
   Flex,
   Select,
   Spinner,
@@ -23,14 +20,15 @@ import { getData, clear } from '../../../../utils/asyncStorage';
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
+import Header from './Header';
 
 const spotify = new SpotifyWebApi();
 
 function PlaylistEditor({ user, route, navigation }) {
-  const [sorter, setSorter] = React.useState('original_position');
-  const [sorterDirection, setSorterDirection] = React.useState('asc');
-  const [progress, setProgress] = React.useState(0);
-  const [tracks, setTracks] = React.useState(null);
+  const [sorter, setSorter] = useState('original_position');
+  const [sorterDirection, setSorterDirection] = useState('asc');
+  const [progress, setProgress] = useState(0);
+  const [tracks, setTracks] = useState(null);
   const selectedPlaylist = route.params.selectedPlaylist;
 
   const sorterOptions = {
@@ -265,7 +263,7 @@ function PlaylistEditor({ user, route, navigation }) {
   }
 
   // Add this in your PlaylistEditor component
-  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
   // In your PlaylistEditor component
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, 300],
@@ -322,26 +320,7 @@ function PlaylistEditor({ user, route, navigation }) {
 
   return (
     <>
-      <Box shadow={'1'} height={'100px'} width={'100%'} position={'absolute'} top={0} left={0} bgColor={'white'} zIndex={1}>
-        <Container mt={'55px'} mb={'25px'} mx={'25px'}>
-          <HStack alignItems="center">
-            <Button onPress={handleBackButtonPress}
-              p={2}
-              mr={2}
-              startIcon={<ChevronLeftIcon color='#5e5e5e' size="5" />}
-              color={'white'}
-              bgColor={'white'}
-              shadow={1}
-              _pressed={{
-                bgColor: 'white',
-                opacity: 0.2
-              }}
-            >
-            </Button>
-            <Heading>{selectedPlaylist.name}</Heading>
-          </HStack>
-        </Container>
-      </Box>
+      <Header text={selectedPlaylist.name} handleBackButtonPress={handleBackButtonPress} />
       <Flex mt={'90px'} mb={'25px'} mx={'25px'}>
 
         <Animated.View
@@ -441,4 +420,4 @@ function PlaylistEditor({ user, route, navigation }) {
   );
 }
 
-export default React.memo(PlaylistEditor);
+export default memo(PlaylistEditor);

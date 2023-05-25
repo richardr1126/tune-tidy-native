@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo, useState, memo } from 'react';
 import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Black.png');
 
 function TopAlbums({ topTracks }) {
-  const [timeRange, setTimeRange] = React.useState("medium_term");
+  const [timeRange, setTimeRange] = useState("medium_term");
   const timeRanges = [
     { label: "Last Month", value: "short_term" },
     { label: "Last 6 Months", value: "medium_term" },
@@ -80,4 +80,4 @@ function TopAlbums({ topTracks }) {
   );
 };
 
-export default React.memo(TopAlbums);
+export default memo(TopAlbums);

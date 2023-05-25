@@ -126,7 +126,7 @@ export default function Main({ navigation }) {
       screenOptions={{
         tabBarActiveTintColor: '#1DB954',
         tabBarInactiveTintColor: 'grey',
-        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0.15, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
+        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 1, borderColor: '#e5e5e5', elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
         headerShown: false,
         swipeEnabled: true,
         lazy: true,

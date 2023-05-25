@@ -1,10 +1,10 @@
-import React from 'react';
+import { useState, memo } from 'react';
 import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack, Spacer } from "native-base";
 import ArtistCard from '../../cards/ArtistCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function TopArtists({ topArtists }) {
-  const [timeRange, setTimeRange] = React.useState("medium_term");
+  const [timeRange, setTimeRange] = useState("medium_term");
   const timeRanges = [
     { label: "Last Month", value: "short_term" },
     { label: "Last 6 Months", value: "medium_term" },
@@ -57,4 +57,4 @@ function TopArtists({ topArtists }) {
   );
 };
 
-export default React.memo(TopArtists);
+export default memo(TopArtists);

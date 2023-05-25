@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, Container, HStack, VStack, Image, Text } from "native-base";
 import * as Linking from 'expo-linking';
 

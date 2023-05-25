@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import PlaylistSelector from "./utils/PlaylistSelector";
 import PlaylistEditor from "./utils/PlaylistEditor";
@@ -16,4 +16,4 @@ function PlaylistRouter({user, playlistData}) {
   );
 }
 
-export default React.memo(PlaylistRouter);
+export default memo(PlaylistRouter);

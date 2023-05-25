@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from "react";
 import { Container, HStack, Text, Avatar, Pressable, Image } from "native-base";
 import * as Linking from 'expo-linking';
 
@@ -27,4 +27,4 @@ const ArtistCard = ({ item, index }) => {
   );
 };
 
-export default React.memo(ArtistCard);
+export default memo(ArtistCard);

@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from "react";
 import { Pressable, Container, HStack, VStack, Image, Text } from "native-base";
 import * as Linking from 'expo-linking';
 
@@ -46,4 +46,4 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
   );
 };
 
-export default React.memo(GenericCard);
+export default memo(GenericCard);

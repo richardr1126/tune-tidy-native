@@ -2,7 +2,7 @@
   "expo": {
     "name": "TuneTidy",
     "slug": "tune-tidy-native",
-    "version": "0.1.4",
+    "version": "0.1.2",
     "orientation": "portrait",
     "icon": "./assets/large-logo.png",
     "userInterfaceStyle": "light",
@@ -16,6 +16,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.tunetidy.native",
       "config": {
