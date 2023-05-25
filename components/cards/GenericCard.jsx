@@ -8,7 +8,7 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
   return (
     <Pressable onPress={onPress}>
       {({ isPressed }) => (
-        <Container my={1} shadow={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
+        <Container my={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
           transform: [{
             scale: isPressed ? 0.98 : 1,
           }]

@@ -7,21 +7,23 @@ function PlaylistSelector({ playlistData, navigation }) {
     navigation.navigate('Playlist Editor', { selectedPlaylist: item });
   }
 
+
   return (
-    <VStack mt={'50px'} mb={'25px'} mx={'25px'}>
-      <Heading>Choose a playlist to sort</Heading>
+    <VStack mt={'59px'} mb={'25px'} mx={'25px'}>
+      <Heading size={'lg'}>Choose a playlist to sort</Heading>
       <FlatList
         mt={2}
         mb={'5px'}
         data={playlistData.items}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={<Container height={10} />}
         renderItem={({ item }) => (
           <Pressable onPress={() => handlePress(item)}>
             {({
               isPressed
             }) => {
               return (
-                <Container my={1} shadow={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
+                <Container my={1} rounded={'md'} bg={'white'} p={2} minWidth={'100%'} style={{
                   transform: [{
                     scale: isPressed ? 0.98 : 1,
                   }]
@@ -29,16 +31,16 @@ function PlaylistSelector({ playlistData, navigation }) {
                   <HStack alignItems="center">
                     <Image
                       source={{ uri: item.images[0].url }}
-                      boxSize={'45px'}
+                      boxSize={'80px'}
                       resizeMode="cover"
                       alt="Playlist Cover"
                       borderRadius={2}
-                      marginRight={2}
+                      marginRight={3}
                     />
                     <Text
                       flexShrink={1} // Allow the text to shrink if necessary
                       fontWeight="black"
-                      fontSize="lg"
+                      fontSize="xl"
                     >
                       {item.name}
                     </Text>
@@ -54,4 +56,4 @@ function PlaylistSelector({ playlistData, navigation }) {
   );
 }
 
-export default React.memo(PlaylistSelector);
+export default PlaylistSelector;

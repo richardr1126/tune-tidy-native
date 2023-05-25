@@ -126,13 +126,13 @@ export default function Main({ navigation }) {
       screenOptions={{
         tabBarActiveTintColor: '#1DB954',
         tabBarInactiveTintColor: 'grey',
-        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0.15, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 0 },
+        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0.15, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
         headerShown: false,
         swipeEnabled: true,
         lazy: true,
         tabBarIconStyle: { justifyContent: 'center', alignItems: 'center' },
         tabBarIndicatorStyle: { backgroundColor: '#1DB954' },
-        tabBarLabelStyle: { fontSize: 10 }, // adjust size of label
+        tabBarLabelStyle: { fontSize: 13, fontWeight: '700' },
       }}
       tabBarPosition='bottom'
     >

@@ -10,12 +10,10 @@ function TracksList({ tracks, spotifyLogo, scrollY }) {
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: true } // Add this to improve performance
       )}
-      ListFooterComponent={<Box height={10} />}
+      ListFooterComponent={<Box height={'100px'} />}
       initialNumToRender={20}
       showsVerticalScrollIndicator={false}
-      mb={5}
-      maxH={'2/3'}
-      mt={5}
+      style={{maxHeight: '85%'}}
       data={tracks}
       renderItem={({ item, index }) => (
         <PlaylistTrackCard item={item} index={index} spotifyLogo={spotifyLogo} />
@@ -25,4 +23,4 @@ function TracksList({ tracks, spotifyLogo, scrollY }) {
   );
 }
 
-export default React.memo(TracksList);
+export default TracksList;

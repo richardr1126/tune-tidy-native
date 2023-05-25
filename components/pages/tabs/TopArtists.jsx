@@ -1,6 +1,7 @@
 import React from 'react';
-import { Select, Heading, Center, Spinner, VStack, FlatList, Box } from "native-base";
+import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack, Spacer } from "native-base";
 import ArtistCard from '../../cards/ArtistCard';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function TopArtists({ topArtists }) {
   const [timeRange, setTimeRange] = React.useState("medium_term");
@@ -11,22 +12,37 @@ function TopArtists({ topArtists }) {
   ];
 
   return (
-    <VStack my={'50px'} mx={'25px'}>
-      <Heading>Top Artists</Heading>
-      <Select selectedValue={timeRange} minWidth={200} maxWidth={200} accessibilityLabel="Choose Time Range" placeholder="Choose Time Range" mt={1} onValueChange={setTimeRange} bg={'white'}>
-        {timeRanges.map(({ label, value }) => (
-          <Select.Item label={label} value={value} key={value} borderRadius={'sm'} />
-        ))}
-      </Select>
+    <VStack my={'59px'} mx={'25px'}>
+      <HStack alignItems={'center'}>
+        <Heading size={'xl'} flex={1}>Top Artists</Heading>
+        <Select
+          minWidth={135}
+          selectedValue={timeRange}
+          accessibilityLabel="Choose Time Range"
+          placeholder="Choose Time Range"
+          onValueChange={setTimeRange}
+          variant='filled'
+          bgColor={'white'}
+          fontWeight={'medium'}
+          color={'#5e5e5e'}
+          dropdownIcon={<Icon name="calendar" size={20} color={'#5e5e5e'} style={{ marginRight: 5 }} />}
+        >
+          {timeRanges.map(({ label, value }) => (
+            <Select.Item label={label} value={value} key={value} borderRadius={'sm'} />
+          ))}
+        </Select>
+      </HStack>
+
+
 
       {topArtists[timeRange]
         ? (
           <FlatList
             mt={2}
-            mb={'15px'}
+            minH={'100%'}
             data={topArtists[timeRange].items}
             showsVerticalScrollIndicator={false}
-            ListFooterComponent={<Box height={10}/>}
+            ListFooterComponent={<Box height={10} />}
             renderItem={({ item, index }) => <ArtistCard item={item} index={index} />}
             keyExtractor={item => item.id}
           />
