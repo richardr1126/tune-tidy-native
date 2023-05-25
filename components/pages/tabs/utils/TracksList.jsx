@@ -7,7 +7,7 @@ function TracksList({ tracks, spotifyLogo, scrollY }) {
     <Animated.FlatList
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: true } // Add this to improve performance
+        { useNativeDriver: true }
       )}
       ListFooterComponent={<Box height={'100px'} />}
       initialNumToRender={20}

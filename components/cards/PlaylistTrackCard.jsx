@@ -1,9 +1,13 @@
 import { Pressable, Container, HStack, VStack, Image, Text } from "native-base";
 import * as Linking from 'expo-linking';
+import { trigger } from 'react-native-haptic-feedback'
 
 export default function PlaylistTrackCard({ index, item, spotifyLogo }) {
   return (
-    <Pressable onPress={() => Linking.openURL(item?.external_urls?.spotify)}>
+    <Pressable onPress={() => {
+      trigger('impactLight');
+      Linking.openURL(item?.external_urls?.spotify);
+    }}>
       {({ isPressed }) => (
         <Container my={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
           transform: [{

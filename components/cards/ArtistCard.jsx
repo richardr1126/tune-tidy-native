@@ -1,11 +1,15 @@
 import { memo } from "react";
 import { Container, HStack, Text, Avatar, Pressable, Image } from "native-base";
 import * as Linking from 'expo-linking';
+import { trigger } from 'react-native-haptic-feedback'
 
 const spotifyLogo = require("../../assets/Spotify_Icon_CMYK_Black.png");
 
 const ArtistCard = ({ item, index }) => {
-  const onPress = () => Linking.openURL(item.url);
+  const onPress = () => {
+    trigger('impactLight')
+    Linking.openURL(item.url)
+  };
 
   return (
     <Pressable onPress={onPress}>

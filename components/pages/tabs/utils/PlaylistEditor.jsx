@@ -21,6 +21,7 @@ import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
+import { trigger } from 'react-native-haptic-feedback';
 
 const spotify = new SpotifyWebApi();
 
@@ -30,6 +31,7 @@ function PlaylistEditor({ user, route, navigation }) {
   const [progress, setProgress] = useState(0);
   const [tracks, setTracks] = useState(null);
   const selectedPlaylist = route.params.selectedPlaylist;
+  const modalRef = useRef(null);
 
   const sorterOptions = {
     'Original Position': 'original_position',
@@ -51,6 +53,7 @@ function PlaylistEditor({ user, route, navigation }) {
   };
 
   const toggleSortDirection = () => {
+    trigger('impactLight');
     if (sorterDirection === 'asc') {
       setSorterDirection('desc');
       setTracks(tracks.reverse());
@@ -62,7 +65,8 @@ function PlaylistEditor({ user, route, navigation }) {
 
   const handleSorterChange = (value) => {
     setSorter(value);
-
+    trigger('impactLight');
+    
     // Use sorter method from Sorter module
     if (tracks) {
       const sorterMethod = Sorters[value];
@@ -74,6 +78,7 @@ function PlaylistEditor({ user, route, navigation }) {
   }
 
   const handleBackButtonPress = () => {
+    trigger('impactLight');
     //setSelectedPlaylist(null);
     navigation.navigate('Playlist Selector');
     //setTracks(null);
@@ -82,11 +87,13 @@ function PlaylistEditor({ user, route, navigation }) {
   }
 
   const handleSpotifyButtonPress = () => {
+    trigger('impactLight');
     Linking.openURL(selectedPlaylist.external_urls.spotify);
   }
 
   const redirectLogin = () => {
     clear();
+    trigger('notificationError')
     navigation.navigate('Landing');
   }
 
@@ -167,8 +174,8 @@ function PlaylistEditor({ user, route, navigation }) {
             original_position: counter,
           };
         });
-        console.log(combinedTracks);
-
+        //console.log(combinedTracks);
+        //trigger('notificationSuccess');
         setTracks(combinedTracks);
       })
       .catch((error) => {
@@ -225,7 +232,7 @@ function PlaylistEditor({ user, route, navigation }) {
         }
       }
     }
-
+    trigger('notificationSuccess');
     fetchPlaylistTracks();
   }
 
@@ -259,6 +266,7 @@ function PlaylistEditor({ user, route, navigation }) {
       console.log(error);
       redirectLogin();
     });
+    trigger('notificationSuccess');
 
   }
 
@@ -320,6 +328,7 @@ function PlaylistEditor({ user, route, navigation }) {
 
   return (
     <>
+      
       <Header text={selectedPlaylist.name} handleBackButtonPress={handleBackButtonPress} />
       <Flex mt={'90px'} mb={'25px'} mx={'25px'}>
 
@@ -343,7 +352,10 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>
-                <Button onPress={() => overridePlaylist(selectedPlaylist, tracks)} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
+                <Button onPress={() => {
+                  modalRef.setVisiblity(true);
+                  overridePlaylist(selectedPlaylist, tracks);
+                }} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -383,7 +395,7 @@ function PlaylistEditor({ user, route, navigation }) {
                 paddingRight: 5,
                 borderRadius: 'md',
               }}
-              
+              onOpen={() => trigger('impactLight')}
               onValueChange={handleSorterChange}
               placeholder="Sort by"
               variant='filled'

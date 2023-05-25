@@ -1,9 +1,13 @@
 import { memo } from "react";
 import { Pressable, Container, HStack, VStack, Image, Text } from "native-base";
 import * as Linking from 'expo-linking';
+import { trigger } from 'react-native-haptic-feedback'
 
 const GenericCard = ({ item, index, spotifyLogo }) => {
-  const onPress = () => Linking.openURL(item.url);
+  const onPress = () => {
+    trigger('impactLight')
+    Linking.openURL(item.url)
+  };
 
   return (
     <Pressable onPress={onPress}>

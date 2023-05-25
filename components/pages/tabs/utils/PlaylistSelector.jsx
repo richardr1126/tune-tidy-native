@@ -1,8 +1,10 @@
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable } from "native-base";
+import { trigger } from 'react-native-haptic-feedback'
 
 function PlaylistSelector({ playlistData, navigation }) {
   const handlePress = (item) => {
     console.log(item);
+    trigger('impactLight');
     navigation.navigate('Playlist Editor', { selectedPlaylist: item });
   }
 
