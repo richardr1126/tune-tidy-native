@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   VStack,
   Heading,
@@ -18,7 +18,7 @@ import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Linking from 'expo-linking';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData, clear, storeData } from '../../../../utils/asyncStorage';
+import { getData, clear } from '../../../../utils/asyncStorage';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
