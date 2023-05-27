@@ -1,5 +1,5 @@
 import { Avatar, HStack, Image, Text, Button, VStack } from 'native-base';
-import { Linking } from 'expo-linking';
+import * as Linking from 'expo-linking';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
@@ -12,10 +12,11 @@ export default function Profile({ user, navigation }) {
   }
 
   const handleSpotifyButtonPress = () => {
-    Linking.openURL(user.external_urls.spotify);
+    Linking.openURL(user?.external_urls?.spotify);
   }
 
   const handleLogoutButtonPress = () => {
+    navigation.goBack();
     navigation.navigate('Landing');
   }
 
@@ -23,7 +24,7 @@ export default function Profile({ user, navigation }) {
     <>
       <Header text={user.display_name} handleBackButtonPress={handleBackButtonPress} />
       <VStack mt={'120px'} alignItems={'center'} space={2}>
-        <Avatar size={'2xl'} source={{ uri: user.images[0].url }} />
+        <Avatar size={'2xl'} source={{ uri: user?.images[0]?.url }} />
         <Text mb={5} fontWeight={'semibold'}>{user.followers.total} Followers</Text>
         <Button borderRadius={'lg'} width={'90%'} onPress={handleSpotifyButtonPress} p={3} bgColor={'#1DB954'} _pressed={{
           opacity: 0.5,

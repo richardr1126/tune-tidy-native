@@ -13,13 +13,11 @@ function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefre
     <VStack mt={'59px'} mb={'25px'} mx={'25px'}>
       <HStack alignItems={'center'}>
         <Heading size={'lg'}>Choose a playlist to sort</Heading>
-
-        {/* <Avatar ml={'auto'} size={'sm'} source={{ uri: user.images[0].url }} /> */}
         <Pressable ml={'auto'} onPress={() => {
           trigger('impactLight');
           navigation.navigate('Profile');
         }}>
-          <Avatar size={'md'} source={{ uri: user.images[0].url }} />
+          <Avatar size={'md'} source={{ uri: user?.images[0]?.url }} />
         </Pressable>
         {/* Logout button */}
       </HStack>
@@ -27,7 +25,7 @@ function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefre
       <FlatList
         mt={2}
         mb={'5px'}
-        data={playlistData.items}
+        data={playlistData?.items}
         refreshing={refreshing}
         onRefresh={() => setRefreshing(true)}
         showsVerticalScrollIndicator={false}

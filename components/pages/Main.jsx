@@ -16,7 +16,7 @@ const spotify = new SpotifyWebApi();
 
 // Define the main tabs component
 export default function Main({ navigation }) {
-  const toast= useToast();
+  const toast = useToast();
   const [user, setUser] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -39,7 +39,7 @@ export default function Main({ navigation }) {
   }
 
   const redirectLogin = () => {
-    clear();
+    //clear();
     navigation.navigate('Landing');
   }
 
@@ -132,7 +132,7 @@ export default function Main({ navigation }) {
     topTracks.short_term &&
     topTracks.medium_term &&
     topTracks.long_term
-  ), []);
+  ), [user]);
 
 
   return (
@@ -149,7 +149,18 @@ export default function Main({ navigation }) {
         tabBarLabelStyle: { fontSize: 13, fontWeight: '700' },
       }}
       tabBarPosition='bottom'
+      initialRouteName='Sorter'
     >
+      <Tab.Screen
+        name="Sorter"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon name="edit" color={color} size={20} />
+          ),
+        }}
+      >
+        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Artists"
         options={{
@@ -180,16 +191,7 @@ export default function Main({ navigation }) {
       >
         {props => <TopAlbums {...props} topTracks={topTracks} />}
       </Tab.Screen>
-      <Tab.Screen
-        name="Sorter"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Icon name="edit" color={color} size={20} />
-          ),
-        }}
-      >
-        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
-      </Tab.Screen>
+
 
 
     </Tab.Navigator>

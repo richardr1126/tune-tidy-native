@@ -118,8 +118,9 @@ function PlaylistEditor({ user, route, navigation }) {
   }
 
   const redirectLogin = () => {
-    clear();
+    //clear();
     trigger('notificationError');
+    navigation.goBack();
     navigation.navigate('Landing');
   }
 
