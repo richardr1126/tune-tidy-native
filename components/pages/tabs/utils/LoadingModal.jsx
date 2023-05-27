@@ -34,7 +34,7 @@ export default function LoadingModal({ isOpen, progress }) {
             Sorting your playlist...
           </Heading>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body _scrollview={{scrollEnabled: false}}>
           <VStack space={2}>
             <Text fontWeight={'medium'}>
               This may take a while depending on the size of your playlist.
