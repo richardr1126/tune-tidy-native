@@ -2,7 +2,8 @@ import { Box } from "native-base";
 import { Animated } from 'react-native';
 import PlaylistTrackCard from '../../../cards/PlaylistTrackCard';
 
-function TracksList({ tracks, spotifyLogo, scrollY }) {
+function TracksList({ refreshing, setRefreshing, tracks, spotifyLogo, scrollY }) {
+  
   return (
     <Animated.FlatList
       onScroll={Animated.event(
@@ -10,10 +11,12 @@ function TracksList({ tracks, spotifyLogo, scrollY }) {
         { useNativeDriver: true }
       )}
       ListFooterComponent={<Box height={'100px'} />}
-      initialNumToRender={20}
+      initialNumToRender={10}
       showsVerticalScrollIndicator={false}
       style={{maxHeight: '85%'}}
       data={tracks}
+      refreshing={refreshing}
+      onRefresh={() => setRefreshing(true)}
       renderItem={({ item, index }) => (
         <PlaylistTrackCard item={item} index={index} spotifyLogo={spotifyLogo} />
       )}

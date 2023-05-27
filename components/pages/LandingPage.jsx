@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser';
 import { storeData, getData } from '../../utils/asyncStorage';
+import { useToast } from 'native-base';
 
 function LandingPage({ navigation }) {
   // Add your CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE, and SCOPES here
@@ -27,22 +28,10 @@ function LandingPage({ navigation }) {
     "playlist-modify-private",
     "user-top-read",
   ].join("%20");
+  const toast = useToast();
 
   const handleLoginButtonPress = async () => {
     console.log(REDIRECT_URI);
-
-    // Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
-    // Linking.addEventListener('url', async (event) => {
-    //   //console.log(event.url);
-    //   const token = event.url.split('#')[1].split('&')[0].split('=')[1];
-    //   const tokenExpiration = JSON.stringify(Date.now() + 3600000);
-    //   await storeData('token', token);
-    //   await storeData('tokenExpiration', tokenExpiration);
-    //   console.log(await getData('token'));
-    //   console.log(await getData('tokenExpiration'));
-    //   navigation.navigate('Main');
-    // });
-
     // Replace with in app broswer
     const result = await WebBrowser.openAuthSessionAsync(
       `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`,
@@ -62,12 +51,33 @@ function LandingPage({ navigation }) {
 
   };
 
+  const autoLogin = async () => {
+    Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
+    Linking.addEventListener('url', async (event) => {
+      //console.log(event.url);
+      const token = event.url.split('#')[1].split('&')[0].split('=')[1];
+      const tokenExpiration = JSON.stringify(Date.now() + 3600000);
+      await storeData('token', token);
+      await storeData('tokenExpiration', tokenExpiration);
+      console.log(await getData('token'));
+      console.log(await getData('tokenExpiration'));
+      navigation.navigate('Main');
+    });
+  }
+
+
   const checkTokenExpiration = async () => {
     const tokenExpiration = await getData('tokenExpiration');
     if (tokenExpiration !== null) {
       if (Date.now() > tokenExpiration) {
         console.log('tokenExpiration is expired, getting a new one');
-        handleLoginButtonPress();
+        toast.show({
+          title: "Your session has expired, please log in again.",
+          placement: 'bottom',
+          status: 'warning',
+          duration: 5000,
+        });
+        autoLogin();
       }
     }
   }

@@ -17,6 +17,7 @@ const spotify = new SpotifyWebApi();
 export default function Main({ navigation }) {
   const [user, setUser] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [topArtists, setTopArtists] = useState({
     short_term: null,
     medium_term: null,
@@ -59,53 +60,56 @@ export default function Main({ navigation }) {
     albumArtists: track.album.artists.map((artist) => artist.name).join(', '),
   });
 
+  const fetchData = async () => {
+    try {
+      await setAccessToken();
+      const userData = await spotify.getMe();
+      let playlistData = await spotify.getUserPlaylists({ limit: 50 });
 
+      if (playlistData.total === 50) {
+        const data2 = await spotify.getUserPlaylists({ limit: 50, offset: 50 });
+        const combinedData = playlistData.items.concat(data2.items);
+        playlistData.items = combinedData;
+      }
+
+      setPlaylistData(playlistData);
+      setUser(userData);
+
+      const shortTermArtists = await spotify.getMyTopArtists({ time_range: 'short_term', limit: 50 });
+      const mediumTermArtists = await spotify.getMyTopArtists({ time_range: 'medium_term', limit: 50 });
+      const longTermArtists = await spotify.getMyTopArtists({ time_range: 'long_term', limit: 50 });
+
+      const shortTermTracks = await spotify.getMyTopTracks({ time_range: 'short_term', limit: 50 });
+      const mediumTermTracks = await spotify.getMyTopTracks({ time_range: 'medium_term', limit: 50 });
+      const longTermTracks = await spotify.getMyTopTracks({ time_range: 'long_term', limit: 50 });
+
+      setTopArtists({
+        short_term: { items: shortTermArtists.items.map(extractArtistData) },
+        medium_term: { items: mediumTermArtists.items.map(extractArtistData) },
+        long_term: { items: longTermArtists.items.map(extractArtistData) },
+      });
+
+      setTopTracks({
+        short_term: { items: shortTermTracks.items.map(extractTrackData) },
+        medium_term: { items: mediumTermTracks.items.map(extractTrackData) },
+        long_term: { items: longTermTracks.items.map(extractTrackData) },
+      });
+
+      setRefreshing(false);
+
+    } catch (error) {
+      console.log("Error fetching data:", error);
+      redirectLogin();
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await setAccessToken();
-        const userData = await spotify.getMe();
-        let playlistData = await spotify.getUserPlaylists({ limit: 50 });
-
-        if (playlistData.total === 50) {
-          const data2 = await spotify.getUserPlaylists({ limit: 50, offset: 50 });
-          const combinedData = playlistData.items.concat(data2.items);
-          playlistData.items = combinedData;
-        }
-
-        setPlaylistData(playlistData);
-        setUser(userData);
-
-        const shortTermArtists = await spotify.getMyTopArtists({ time_range: 'short_term', limit: 50 });
-        const mediumTermArtists = await spotify.getMyTopArtists({ time_range: 'medium_term', limit: 50 });
-        const longTermArtists = await spotify.getMyTopArtists({ time_range: 'long_term', limit: 50 });
-
-        const shortTermTracks = await spotify.getMyTopTracks({ time_range: 'short_term', limit: 50 });
-        const mediumTermTracks = await spotify.getMyTopTracks({ time_range: 'medium_term', limit: 50 });
-        const longTermTracks = await spotify.getMyTopTracks({ time_range: 'long_term', limit: 50 });
-
-        setTopArtists({
-          short_term: { items: shortTermArtists.items.map(extractArtistData) },
-          medium_term: { items: mediumTermArtists.items.map(extractArtistData) },
-          long_term: { items: longTermArtists.items.map(extractArtistData) },
-        });
-
-        setTopTracks({
-          short_term: { items: shortTermTracks.items.map(extractTrackData) },
-          medium_term: { items: mediumTermTracks.items.map(extractTrackData) },
-          long_term: { items: longTermTracks.items.map(extractTrackData) },
-        });
-
-      } catch (error) {
-        console.log("Error fetching data:", error);
-        redirectLogin();
-      }
-    }
-
-    fetchData();
-
+    setRefreshing(true);
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [refreshing]);
 
 
   const dataFetched = useMemo(() => (
@@ -176,7 +180,7 @@ export default function Main({ navigation }) {
           ),
         }}
       >
-        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} />}
+        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
       </Tab.Screen>
 
 

@@ -1,7 +1,8 @@
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable } from "native-base";
+import { useEffect, useState } from "react";
 import { trigger } from 'react-native-haptic-feedback'
 
-function PlaylistSelector({ playlistData, navigation }) {
+function PlaylistSelector({ playlistData, navigation, refreshing, setRefreshing }) {
   const handlePress = (item) => {
     console.log(item);
     trigger('impactLight');
@@ -16,6 +17,8 @@ function PlaylistSelector({ playlistData, navigation }) {
         mt={2}
         mb={'5px'}
         data={playlistData.items}
+        refreshing={refreshing}
+        onRefresh={() => setRefreshing(true)}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={<Container height={10} />}
         renderItem={({ item }) => (

@@ -10,6 +10,7 @@ import {
   Flex,
   Select,
   Spinner,
+  useToast,
 } from "native-base";
 import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -22,16 +23,19 @@ import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
 import { trigger } from 'react-native-haptic-feedback';
+import LoadingModal from './LoadingModal';
 
 const spotify = new SpotifyWebApi();
 
 function PlaylistEditor({ user, route, navigation }) {
   const [sorter, setSorter] = useState('original_position');
   const [sorterDirection, setSorterDirection] = useState('asc');
+  const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [tracks, setTracks] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const selectedPlaylist = route.params.selectedPlaylist;
-  const modalRef = useRef(null);
+  const toast = useToast();
 
   const sorterOptions = {
     'Original Position': 'original_position',
@@ -52,21 +56,44 @@ function PlaylistEditor({ user, route, navigation }) {
     'Valence': 'valence',
   };
 
+  const sorterDirections = {
+    'asc': 'Ascending',
+    'desc': 'Descending',
+  };
+
+  function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
   const toggleSortDirection = () => {
     trigger('impactLight');
     if (sorterDirection === 'asc') {
       setSorterDirection('desc');
       setTracks(tracks.reverse());
+      toast.show({
+        title: 'Sorting by ' + getKeyByValue(sorterOptions, sorter) + ' - Descending',
+        placement: 'bottom',
+        duration: 2666,
+      });
     } else {
       setSorterDirection('asc');
       setTracks(tracks.reverse());
+      toast.show({
+        title: 'Sorting by ' + getKeyByValue(sorterOptions, sorter) + ' - Ascending',
+        placement: 'bottom',
+        duration: 2666,
+      });
     }
   }
-
+  
   const handleSorterChange = (value) => {
     setSorter(value);
     trigger('impactLight');
-    
+    toast.show({
+      title: 'Sorting by ' + getKeyByValue(sorterOptions, value) + ' - ' + sorterDirections[sorterDirection],
+      placement: 'bottom',
+      duration: 2666,
+    });
     // Use sorter method from Sorter module
     if (tracks) {
       const sorterMethod = Sorters[value];
@@ -93,19 +120,40 @@ function PlaylistEditor({ user, route, navigation }) {
 
   const redirectLogin = () => {
     clear();
-    trigger('notificationError')
+    trigger('notificationError');
     navigation.navigate('Landing');
   }
 
+  const checkTokenExpiration = async () => {
+    const tokenExpiration = await getData('tokenExpiration');
+    if (tokenExpiration !== null) {
+      //check if token will expire in next 15 minutes
+      if (Date.now() > tokenExpiration - 900000) {
+        console.log('tokenExpiration is expired, getting a new one');
+        redirectLogin();
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
   const setAccessToken = async () => {
-    const token = await getData('token');
-    console.log('token is: ', token);
-    spotify.setAccessToken(token);
-    return token;
+    if (await checkTokenExpiration()) {
+      const token = await getData('token');
+      console.log('token is: ', token);
+      spotify.setAccessToken(token);
+      return token;
+    } else {
+      return null;
+    }
   }
 
   // A function to fetch user's top tracks using Spotify Web API
   const fetchPlaylistTracks = async () => {
+    if (await setAccessToken() === null) {
+      return;
+    }
     const id = selectedPlaylist.id;
     console.log('id: ', id);
 
@@ -177,6 +225,7 @@ function PlaylistEditor({ user, route, navigation }) {
         //console.log(combinedTracks);
         //trigger('notificationSuccess');
         setTracks(combinedTracks);
+        
       })
       .catch((error) => {
         console.log("Error fetching tracks from playlist:", error);
@@ -185,6 +234,9 @@ function PlaylistEditor({ user, route, navigation }) {
   }
 
   const overridePlaylist = async (playlist, tracks) => {
+    if (await setAccessToken() === null) {
+      return;
+    }
     const playlistId = playlist.id;
     const newOrder = tracks.slice();
     const batchSize = 10; // Adjust the batch size to your preference
@@ -232,16 +284,25 @@ function PlaylistEditor({ user, route, navigation }) {
         }
       }
     }
-    trigger('notificationSuccess');
+    
     fetchPlaylistTracks();
+    trigger('notificationSuccess');
+
+    toast.show({
+      title: 'Sorted playlist successfully overridden',
+      placement: 'bottom',
+      duration: 2666,
+    });
   }
 
   // Creates a new playlist with the same name as the original playlist, but with "(Tune Tidy)" appended to the end
   const createNewPlaylist = async (playlist, tracks) => {
-    await setAccessToken();
+    if (await setAccessToken() === null) {
+      return;
+    }
     spotify.createPlaylist(playlist.owner.id, {
       name: playlist.name + " - Sorted",
-      description: playlist.description + (playlist.description ? ". " : "") + "Sorted by " + sorter + " " + sorterDirection,
+      description: playlist.description + (playlist.description ? ". " : "") + "Sorted by " + getKeyByValue(sorterOptions, sorter) + " - " + sorterDirections[sorterDirection],
     }).then(async (data) => {
       console.log(data);
       const newPlaylistId = data.id;
@@ -267,7 +328,11 @@ function PlaylistEditor({ user, route, navigation }) {
       redirectLogin();
     });
     trigger('notificationSuccess');
-
+    toast.show({
+      title: 'Sorted playlist successfully copied',
+      placement: 'bottom',
+      duration: 2666,
+    });
   }
 
   // Add this in your PlaylistEditor component
@@ -285,29 +350,9 @@ function PlaylistEditor({ user, route, navigation }) {
     extrapolate: 'clamp',
   });
 
-  useEffect(() => {
-    if (!tracks) {
-      const fetchData = async () => {
-        try {
-          await setAccessToken();
-          await fetchPlaylistTracks();
-
-
-        } catch (error) {
-          console.log("Error fetching data:", error);
-          redirectLogin();
-        }
-      }
-
-      fetchData();
-    }
-
-  }, []);
+  
 
   function getSortIcon() {
-    // if (sorter === 'name' || sorter === 'album_name') {
-    //   return (<Icon name="sort-alpha-down" size={20} color={'#5e5e5e'} style={{ marginRight: 5 }} />);
-    // }
     if (sorterDirection === 'asc') {
       if (sorter === 'name' || sorter === 'album_name' || sorter === 'artist_name') {
         return (<Icon name="sort-alpha-down" size={20} color={'#5e5e5e'} />);
@@ -325,13 +370,61 @@ function PlaylistEditor({ user, route, navigation }) {
     }
   }
 
+  const handleOverrideButtonPress = () => {
+    trigger('impactLight');
+    setLoading(true);
+    // await overridePlaylist(selectedPlaylist, tracks);
+  }
+
+  const handleCopyButtonPress = async () => {
+    trigger('impactLight');
+    await createNewPlaylist(selectedPlaylist, tracks);
+  }
+
+  useEffect(() => {
+    const asyncLoader = async () => {
+      if (loading) {
+        await overridePlaylist(selectedPlaylist, tracks);
+        setLoading(false);
+        setProgress(0);
+      }
+    }
+    asyncLoader();
+  }, [loading]);
+
+  useEffect(() => {
+    const asyncLoader = async () => {
+      if (refreshing) {
+        try {
+          await fetchPlaylistTracks();
+        } catch (error) {
+          console.log("Error fetching tracks:", error);
+          redirectLogin();
+        }
+        
+        toast.show({
+          title: 'Tracks fetched',
+          placement: 'bottom',
+          duration: 2666,
+        });
+        setRefreshing(false);
+      }
+    }
+    asyncLoader();
+  }, [refreshing]);
+
+  useEffect(() => {
+    if (!tracks) {
+      setRefreshing(true);
+    }
+  }, []);
+
 
   return (
     <>
-      
+      <LoadingModal isOpen={loading} progress={progress} />
       <Header text={selectedPlaylist.name} handleBackButtonPress={handleBackButtonPress} />
       <Flex mt={'90px'} mb={'25px'} mx={'25px'}>
-
         <Animated.View
           style={{
             transform: [{ translateY: headerTranslateY }],
@@ -352,10 +445,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>
-                <Button onPress={() => {
-                  modalRef.setVisiblity(true);
-                  overridePlaylist(selectedPlaylist, tracks);
-                }} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
+                <Button onPress={handleOverrideButtonPress} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -363,7 +453,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
                   </HStack>
                 </Button>
-                <Button onPress={() => createNewPlaylist(selectedPlaylist, tracks)} variant={'outline'} flex={1} ml={2} p={3} _pressed={{
+                <Button onPress={handleCopyButtonPress} variant={'outline'} flex={1} ml={2} p={3} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -415,14 +505,8 @@ function PlaylistEditor({ user, route, navigation }) {
             </Button>
           </HStack>
           {/* Tracks */}
-          {tracks ? (
-            <TracksList tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
-
-          ) : (
-            <Center p={20}>
-              <Spinner accessibilityLabel="Loading tracks" color={'grey'} />
-            </Center>
-          )}
+          
+          <TracksList refreshing={refreshing} setRefreshing={setRefreshing} tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
         </Animated.View>
 
 
