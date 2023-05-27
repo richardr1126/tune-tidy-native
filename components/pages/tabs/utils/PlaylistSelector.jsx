@@ -1,8 +1,7 @@
-import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable } from "native-base";
-import { useEffect, useState } from "react";
+import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable, Avatar } from "native-base";
 import { trigger } from 'react-native-haptic-feedback'
 
-function PlaylistSelector({ playlistData, navigation, refreshing, setRefreshing }) {
+function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefreshing }) {
   const handlePress = (item) => {
     console.log(item);
     trigger('impactLight');
@@ -12,7 +11,19 @@ function PlaylistSelector({ playlistData, navigation, refreshing, setRefreshing 
 
   return (
     <VStack mt={'59px'} mb={'25px'} mx={'25px'}>
-      <Heading size={'lg'}>Choose a playlist to sort</Heading>
+      <HStack alignItems={'center'}>
+        <Heading size={'lg'}>Choose a playlist to sort</Heading>
+
+        {/* <Avatar ml={'auto'} size={'sm'} source={{ uri: user.images[0].url }} /> */}
+        <Pressable ml={'auto'} onPress={() => {
+          trigger('impactLight');
+          navigation.navigate('Profile');
+        }}>
+          <Avatar size={'md'} source={{ uri: user.images[0].url }} />
+        </Pressable>
+        {/* Logout button */}
+      </HStack>
+      
       <FlatList
         mt={2}
         mb={'5px'}

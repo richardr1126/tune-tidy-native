@@ -2,6 +2,7 @@ import { useState, memo } from 'react';
 import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { trigger } from 'react-native-haptic-feedback';
 
 const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Black.png');
 
@@ -26,6 +27,7 @@ function TopTracks({ topTracks }) {
           variant='filled'
           bgColor={'white'}
           fontWeight={'medium'}
+          onOpen={() => trigger('impactLight')}
           color={'#5e5e5e'}
           dropdownIcon={<Icon name="calendar" size={20} color={'#5e5e5e'} style={{ marginRight: 5 }} />}
         >

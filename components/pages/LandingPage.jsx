@@ -51,19 +51,6 @@ function LandingPage({ navigation }) {
 
   };
 
-  const autoLogin = async () => {
-    Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`);
-    Linking.addEventListener('url', async (event) => {
-      //console.log(event.url);
-      const token = event.url.split('#')[1].split('&')[0].split('=')[1];
-      const tokenExpiration = JSON.stringify(Date.now() + 3600000);
-      await storeData('token', token);
-      await storeData('tokenExpiration', tokenExpiration);
-      console.log(await getData('token'));
-      console.log(await getData('tokenExpiration'));
-      navigation.navigate('Main');
-    });
-  }
 
 
   const checkTokenExpiration = async () => {
@@ -74,10 +61,8 @@ function LandingPage({ navigation }) {
         toast.show({
           title: "Your session has expired, please log in again.",
           placement: 'bottom',
-          status: 'warning',
-          duration: 5000,
         });
-        autoLogin();
+        handleLoginButtonPress();
       }
     }
   }

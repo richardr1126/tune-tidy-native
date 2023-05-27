@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, clear } from '../../utils/asyncStorage';
@@ -8,6 +8,7 @@ import TopAlbums from './tabs/TopAlbums';
 import PlaylistRouter from './tabs/PlaylistRouter';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { useToast } from 'native-base';
 
 // Create a bottom tab navigator
 const Tab = createMaterialTopTabNavigator();
@@ -15,6 +16,7 @@ const spotify = new SpotifyWebApi();
 
 // Define the main tabs component
 export default function Main({ navigation }) {
+  const toast= useToast();
   const [user, setUser] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -96,6 +98,11 @@ export default function Main({ navigation }) {
       });
 
       setRefreshing(false);
+      toast.show({
+        title: "Synced with Spotify",
+        placement: 'bottom',
+        duration: 2666,
+      });
 
     } catch (error) {
       console.log("Error fetching data:", error);
@@ -104,11 +111,15 @@ export default function Main({ navigation }) {
   };
 
   useEffect(() => {
-    setRefreshing(true);
+    if (!dataFetched) {
+      setRefreshing(true);
+    }
   }, []);
 
   useEffect(() => {
-    fetchData();
+    if (refreshing) {
+      fetchData();
+    }
   }, [refreshing]);
 
 
@@ -121,11 +132,10 @@ export default function Main({ navigation }) {
     topTracks.short_term &&
     topTracks.medium_term &&
     topTracks.long_term
-  ), [user, playlistData, topArtists, topTracks]);
+  ), []);
 
 
-
-  if (dataFetched) return (
+  return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#1DB954',
@@ -154,9 +164,7 @@ export default function Main({ navigation }) {
         name="Tracks"
         options={{
           tabBarIcon: ({ color }) => (
-
             <Icon name="list-ol" color={color} size={20} />
-
           ),
         }}
       >

@@ -1,7 +1,8 @@
 import { useState, memo } from 'react';
-import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack, Spacer } from "native-base";
+import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack } from "native-base";
 import ArtistCard from '../../cards/ArtistCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { trigger } from 'react-native-haptic-feedback';
 
 function TopArtists({ topArtists }) {
   const [timeRange, setTimeRange] = useState("medium_term");
@@ -25,6 +26,7 @@ function TopArtists({ topArtists }) {
           bgColor={'white'}
           fontWeight={'medium'}
           color={'#5e5e5e'}
+          onOpen={() => trigger('impactLight')}
           dropdownIcon={<Icon name="calendar" size={20} color={'#5e5e5e'} style={{ marginRight: 5 }} />}
         >
           {timeRanges.map(({ label, value }) => (

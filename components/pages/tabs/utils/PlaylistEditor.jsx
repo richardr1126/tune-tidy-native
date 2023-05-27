@@ -9,7 +9,6 @@ import {
   Center,
   Flex,
   Select,
-  Spinner,
   useToast,
 } from "native-base";
 import { Animated } from 'react-native';
@@ -225,6 +224,12 @@ function PlaylistEditor({ user, route, navigation }) {
         //console.log(combinedTracks);
         //trigger('notificationSuccess');
         setTracks(combinedTracks);
+        toast.show({
+          title: 'Tracks fetched',
+          placement: 'bottom',
+          duration: 2666,
+        });
+        setRefreshing(false);
         
       })
       .catch((error) => {
@@ -286,7 +291,6 @@ function PlaylistEditor({ user, route, navigation }) {
     }
     
     fetchPlaylistTracks();
-    trigger('notificationSuccess');
 
     toast.show({
       title: 'Sorted playlist successfully overridden',
@@ -397,17 +401,13 @@ function PlaylistEditor({ user, route, navigation }) {
       if (refreshing) {
         try {
           await fetchPlaylistTracks();
+          
         } catch (error) {
           console.log("Error fetching tracks:", error);
           redirectLogin();
         }
         
-        toast.show({
-          title: 'Tracks fetched',
-          placement: 'bottom',
-          duration: 2666,
-        });
-        setRefreshing(false);
+        
       }
     }
     asyncLoader();
@@ -437,7 +437,7 @@ function PlaylistEditor({ user, route, navigation }) {
                 <Image borderRadius={4} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
               </Container>
               <VStack space={2}>
-                <Button onPress={handleSpotifyButtonPress} flex={1} ml={2} p={3} bgColor={'#1DB954'} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleSpotifyButtonPress} flex={1} ml={2} p={3} bgColor={'#1DB954'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center" flex={1}>
@@ -445,7 +445,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>
-                <Button onPress={handleOverrideButtonPress} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -453,7 +453,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
                   </HStack>
                 </Button>
-                <Button onPress={handleCopyButtonPress} variant={'outline'} flex={1} ml={2} p={3} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} variant={'outline'} flex={1} ml={2} p={3} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
