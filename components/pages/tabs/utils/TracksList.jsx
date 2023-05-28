@@ -10,10 +10,10 @@ function TracksList({ refreshing, setRefreshing, tracks, spotifyLogo, scrollY })
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: true }
       )}
-      ListFooterComponent={<Box height={'100px'} />}
+      ListFooterComponent={<Box height={'300px'} />}
       initialNumToRender={10}
       showsVerticalScrollIndicator={false}
-      style={{maxHeight: '85%'}}
+      style={{maxHeight: '100%'}}
       data={tracks}
       refreshing={refreshing}
       onRefresh={() => setRefreshing(true)}

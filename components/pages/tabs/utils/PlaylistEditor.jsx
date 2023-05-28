@@ -26,7 +26,7 @@ import LoadingModal from './LoadingModal';
 
 const spotify = new SpotifyWebApi();
 
-function PlaylistEditor({ user, route, navigation }) {
+function PlaylistEditor({ route, navigation }) {
   const [sorter, setSorter] = useState('original_position');
   const [sorterDirection, setSorterDirection] = useState('asc');
   const [loading, setLoading] = useState(false);
@@ -34,6 +34,7 @@ function PlaylistEditor({ user, route, navigation }) {
   const [tracks, setTracks] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const selectedPlaylist = route.params.selectedPlaylist;
+  const user = route.params.user;
   const toast = useToast();
 
   const sorterOptions = {
@@ -110,27 +111,27 @@ function PlaylistEditor({ user, route, navigation }) {
       setTracks(tracks.reverse());
       toast.show({
         title: 'Sorting by ' + getKeyByValue(sorterOptions, sorter) + ' - Descending',
-        placement: 'bottom',
-        duration: 2666,
+        placement: 'top',
+        duration: 2000,
       });
     } else {
       setSorterDirection('asc');
       setTracks(tracks.reverse());
       toast.show({
         title: 'Sorting by ' + getKeyByValue(sorterOptions, sorter) + ' - Ascending',
-        placement: 'bottom',
-        duration: 2666,
+        placement: 'top',
+        duration: 2000,
       });
     }
   }
 
   const handleSorterChange = (value) => {
-    setSorter(value);
     trigger('impactLight');
+    setSorter(value);
     toast.show({
       title: 'Sorting by ' + getKeyByValue(sorterOptions, value) + ' - ' + sorterDirections[sorterDirection],
-      placement: 'bottom',
-      duration: 2666,
+      placement: 'top',
+      duration: 2000,
     });
     // Use sorter method from Sorter module
     if (tracks) {
@@ -264,10 +265,11 @@ function PlaylistEditor({ user, route, navigation }) {
         //console.log(combinedTracks);
         //trigger('notificationSuccess');
         setTracks(combinedTracks);
+        toast.closeAll();
         toast.show({
           title: 'Tracks fetched',
-          placement: 'bottom',
-          duration: 2666,
+          placement: 'top',
+          duration: 2000,
         });
         setRefreshing(false);
 
@@ -330,21 +332,21 @@ function PlaylistEditor({ user, route, navigation }) {
       }
     }
 
-    fetchPlaylistTracks();
+    setRefreshing(true);
 
     toast.show({
       title: 'Sorted playlist successfully overridden',
-      placement: 'bottom',
-      duration: 2666,
+      placement: 'top',
+      duration: 2000,
     });
   }
 
   // Creates a new playlist with the same name as the original playlist, but with "(Tune Tidy)" appended to the end
-  const createNewPlaylist = async (playlist, tracks) => {
+  const createNewPlaylist = async (user, playlist, tracks) => {
     if (await setAccessToken() === null) {
       return;
     }
-    spotify.createPlaylist(playlist.owner.id, {
+    spotify.createPlaylist(user.id, {
       name: playlist.name + " - Sorted",
       description: playlist.description + (playlist.description ? ". " : "") + "Sorted by " + getKeyByValue(sorterOptions, sorter) + " - " + sorterDirections[sorterDirection],
     }).then(async (data) => {
@@ -374,8 +376,8 @@ function PlaylistEditor({ user, route, navigation }) {
     trigger('notificationSuccess');
     toast.show({
       title: 'Sorted playlist successfully copied',
-      placement: 'bottom',
-      duration: 2666,
+      placement: 'top',
+      duration: 2000,
     });
   }
 
@@ -403,7 +405,7 @@ function PlaylistEditor({ user, route, navigation }) {
 
   const handleCopyButtonPress = async () => {
     trigger('impactLight');
-    await createNewPlaylist(selectedPlaylist, tracks);
+    await createNewPlaylist(user, selectedPlaylist, tracks);
   }
 
   useEffect(() => {
@@ -466,7 +468,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>
-                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} disabled={selectedPlaylist.owner.id !== user.id ? true:false} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -474,7 +476,7 @@ function PlaylistEditor({ user, route, navigation }) {
                     <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
                   </HStack>
                 </Button>
-                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} variant={'outline'} flex={1} ml={2} p={3} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={'white'} flex={1} ml={2} p={3} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">

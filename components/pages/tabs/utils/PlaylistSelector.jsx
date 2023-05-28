@@ -1,16 +1,24 @@
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable, Avatar } from "native-base";
 import { trigger } from 'react-native-haptic-feedback'
+import { getData, storeData } from '../../../../utils/asyncStorage';
+import { StatusBar } from 'expo-status-bar';
 
-function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefreshing }) {
-  const handlePress = (item) => {
+function PlaylistSelector({ rootNavigator, user, playlistData, navigation, refreshing, setRefreshing }) {
+  const handlePress = async (item) => {
     console.log(item);
     trigger('impactLight');
-    navigation.navigate('Playlist Editor', { selectedPlaylist: item });
+    navigation.navigate('Playlist Editor', { user: user, selectedPlaylist: item });
+    const viewedInstructions = await getData('viewedInstructions');
+    if (!viewedInstructions||viewedInstructions === 'false') {
+      await storeData('viewedInstructions', 'true');
+      rootNavigator.navigate('Instructions');
+    }
   }
 
 
   return (
     <VStack mt={'59px'} mb={'25px'} mx={'25px'}>
+      <StatusBar style="dark" />
       <HStack alignItems={'center'}>
         <Heading size={'lg'}>Choose a playlist to sort</Heading>
         <Pressable ml={'auto'} onPress={() => {

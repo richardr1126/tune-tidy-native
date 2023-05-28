@@ -3,10 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NativeBaseProvider } from "native-base";
 import { getData } from './utils/asyncStorage';
+import { StatusBar } from 'expo-status-bar';
 
 // Import your screens
 import LandingPage from './components/pages/LandingPage';
 import Main from './components/pages/Main';
+import Instructions from './components/pages/tabs/utils/Instructions';
 
 // Create a stack navigator
 const Stack = createStackNavigator();
@@ -32,6 +34,7 @@ export default function App() {
 
   useEffect(() => {
     checkTokenExpiration();
+    //make status bar black
     //console.log(REACT_APP_NODE_ENV);
     //console.log(Linking.createURL());
   }, []);
@@ -43,9 +46,10 @@ export default function App() {
   return (
     <NativeBaseProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={loggedIn ? 'Main' : 'Landing'} screenOptions={{ headerShown: false, gestureEnabled: false, freezeOnBlur: true }}>
-          <Stack.Screen name="Landing" component={LandingPage} options={{ headerShown: false }} />
+        <Stack.Navigator initialRouteName={loggedIn ? 'Main' : 'Landing'} screenOptions={{ headerShown: false, freezeOnBlur: true }}>
+          <Stack.Screen name="Landing" component={LandingPage} options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+          <Stack.Screen name="Instructions" component={Instructions} options={{ presentation: 'modal' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

@@ -98,10 +98,11 @@ export default function Main({ navigation }) {
       });
 
       setRefreshing(false);
+      toast.closeAll();
       toast.show({
         title: "Synced with Spotify",
-        placement: 'bottom',
-        duration: 2666,
+        placement: 'top',
+        duration: 1000,
       });
 
     } catch (error) {
@@ -159,7 +160,7 @@ export default function Main({ navigation }) {
           ),
         }}
       >
-        {props => <PlaylistRouter {...props} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
+        {props => <PlaylistRouter {...props} rootNavigator={navigation} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
       </Tab.Screen>
       <Tab.Screen
         name="Artists"
