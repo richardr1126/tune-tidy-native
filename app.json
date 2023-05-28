@@ -16,7 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "4",
+      "buildNumber": "6",
       "supportsTablet": true,
       "bundleIdentifier": "com.tunetidy.native",
       "infoPlist": {

@@ -15,7 +15,7 @@ import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Linking from 'expo-linking';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData, clear } from '../../../../utils/asyncStorage';
+import { getData } from '../../../../utils/asyncStorage';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
@@ -55,6 +55,45 @@ function PlaylistEditor({ user, route, navigation }) {
     'Valence': 'valence',
   };
 
+  const iconOptions = {
+    'Original Position': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
+    'Album Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
+    'Artist Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
+    'Release Date': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Popularity': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Date Added': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Tempo': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Acousticness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Danceability': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Energy': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Instrumentalness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Liveness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Loudness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Speechiness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+    'Valence': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
+  };
+
+  const iconOptionsLeft = {
+    'Original Position': 'hashtag',
+    'Name': 'list-ol',
+    'Album Name': 'compact-disc',
+    'Artist Name': 'user',
+    'Release Date': 'calendar-alt',
+    'Popularity': 'fire',
+    'Date Added': 'calendar-plus',
+    'Tempo': 'tachometer-alt',
+    'Acousticness': 'wave-square',
+    'Danceability': 'walking',
+    'Energy': 'bolt',
+    'Instrumentalness': 'guitar',
+    'Liveness': 'microphone-alt',
+    'Loudness': 'volume-up',
+    'Speechiness': 'comment-alt',
+    'Valence': 'heart',
+  };
+
+
   const sorterDirections = {
     'asc': 'Ascending',
     'desc': 'Descending',
@@ -84,7 +123,7 @@ function PlaylistEditor({ user, route, navigation }) {
       });
     }
   }
-  
+
   const handleSorterChange = (value) => {
     setSorter(value);
     trigger('impactLight');
@@ -231,7 +270,7 @@ function PlaylistEditor({ user, route, navigation }) {
           duration: 2666,
         });
         setRefreshing(false);
-        
+
       })
       .catch((error) => {
         console.log("Error fetching tracks from playlist:", error);
@@ -290,7 +329,7 @@ function PlaylistEditor({ user, route, navigation }) {
         }
       }
     }
-    
+
     fetchPlaylistTracks();
 
     toast.show({
@@ -350,30 +389,11 @@ function PlaylistEditor({ user, route, navigation }) {
   });
   // Define another translateY animation for the rest of the content
   const contentTranslateY = scrollY.interpolate({
-    inputRange: [0, 180],
-    outputRange: [0, -180],
+    inputRange: [0, 182],
+    outputRange: [0, -182],
     extrapolate: 'clamp',
   });
 
-  
-
-  function getSortIcon() {
-    if (sorterDirection === 'asc') {
-      if (sorter === 'name' || sorter === 'album_name' || sorter === 'artist_name') {
-        return (<Icon name="sort-alpha-down" size={20} color={'#5e5e5e'} />);
-      } else if (sorter === 'original_position') {
-        return (<Icon name={"sort-numeric-down"} size={20} color={'#5e5e5e'} />);
-      }
-      return (<Icon name={"sort-amount-down-alt"} size={20} color={'#5e5e5e'}/>);
-    } else {
-      if (sorter === 'name' || sorter === 'album_name' || sorter === 'artist_name') {
-        return (<Icon name="sort-alpha-down-alt" size={20} color={'#5e5e5e'} />);
-      } else if (sorter === 'original_position') {
-        return (<Icon name={"sort-numeric-down-alt"} size={20} color={'#5e5e5e'} />);
-      }
-      return (<Icon name={"sort-amount-down"} size={20} color={'#5e5e5e'} />);
-    }
-  }
 
   const handleOverrideButtonPress = () => {
     trigger('impactLight');
@@ -402,13 +422,13 @@ function PlaylistEditor({ user, route, navigation }) {
       if (refreshing) {
         try {
           await fetchPlaylistTracks();
-          
+
         } catch (error) {
           console.log("Error fetching tracks:", error);
           redirectLogin();
         }
-        
-        
+
+
       }
     }
     asyncLoader();
@@ -434,8 +454,8 @@ function PlaylistEditor({ user, route, navigation }) {
         >
           <Center>
             <HStack mt={5} alignItems="center">
-              <Container shadow={3}>
-                <Image borderRadius={4} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
+              <Container>
+                <Image borderRadius={'sm'} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
               </Container>
               <VStack space={2}>
                 <Button borderRadius={'lg'} onPress={handleSpotifyButtonPress} flex={1} ml={2} p={3} bgColor={'#1DB954'} _pressed={{
@@ -473,40 +493,48 @@ function PlaylistEditor({ user, route, navigation }) {
             transform: [{ translateY: contentTranslateY }],
           }}
         >
-          <HStack mb={3} mt={5} alignItems={'center'}>
+          <HStack mb={1} mt={4} alignItems={'center'}>
             <Select
               selectedValue={sorter}
               size={'lg'}
               flex={1}
               _item={{
-                fontWeight: '800',
                 paddingTop: 1.5,
                 paddingBottom: 1.5,
                 paddingLeft: 5,
                 paddingRight: 5,
                 borderRadius: 'md',
+                justifyContent: 'center',
               }}
+              borderRadius={'md'}
               onOpen={() => trigger('impactLight')}
               onValueChange={handleSorterChange}
               placeholder="Sort by"
               variant='filled'
               bgColor={'white'}
               fontWeight={'medium'}
-              dropdownIcon={<Icon name="sort" size={20} color={'#5e5e5e'} style={{ marginRight: 10 }} />}
+              dropdownIcon={<Icon name={iconOptionsLeft[getKeyByValue(sorterOptions, sorter)]} size={20} color={'#5e5e5e'} style={{ marginRight: 10 }} />}
             >
               {Object.keys(sorterOptions).map((option, index) => (
-                <Select.Item key={index} label={option} value={sorterOptions[option]} />
+                <Select.Item
+                  rightIcon={<Icon name={iconOptions[option][sorterDirection]} size={20} color={'#5e5e5e'} style={{ marginLeft: 'auto' }} />}
+                  leftIcon={<Icon name={iconOptionsLeft[option]} size={20} color={'#5e5e5e'} />}
+                  key={index}
+                  label={option}
+                  _text={{fontWeight: 'medium'}}
+                  value={sorterOptions[option]}
+                />
               ))}
             </Select>
             {/* Asc/Desc button */}
-            <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={'white'} _pressed={{
+            <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={'white'} borderRadius={'md'} _pressed={{
               opacity: 0.5,
             }}>
-              {getSortIcon()}
+              <Icon name={iconOptions[getKeyByValue(sorterOptions, sorter)][sorterDirection]} size={20} color={'#5e5e5e'} />
             </Button>
           </HStack>
           {/* Tracks */}
-          
+
           <TracksList refreshing={refreshing} setRefreshing={setRefreshing} tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
         </Animated.View>
 

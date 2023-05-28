@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData, clear } from '../../utils/asyncStorage';
+import { getData } from '../../utils/asyncStorage';
 import TopArtists from './tabs/TopArtists';
 import TopTracks from './tabs/TopTracks';
 import TopAlbums from './tabs/TopAlbums';
