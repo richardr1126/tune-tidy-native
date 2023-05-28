@@ -31,6 +31,7 @@ function LandingPage({ navigation }) {
   const toast = useToast();
 
   const handleLoginButtonPress = async () => {
+    toast.closeAll();
     console.log(REDIRECT_URI);
     // Replace with in app broswer
     const result = await WebBrowser.openAuthSessionAsync(
@@ -60,7 +61,8 @@ function LandingPage({ navigation }) {
         console.log('tokenExpiration is expired, getting a new one');
         toast.show({
           title: "Your session has expired, please log in again.",
-          placement: 'bottom',
+          placement: 'top',
+          duration: 2000,
         });
         handleLoginButtonPress();
       }
