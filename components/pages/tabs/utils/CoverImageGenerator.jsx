@@ -49,7 +49,7 @@ export default function CoverImageGenerator({ route, navigation }) {
     <TouchableWithoutFeedback
       onPress={() => { Keyboard.dismiss(); }}>
       <Box flex={1} p={6} bgColor='white' borderRadius='lg'>
-        <Heading size={'lg'}>Create Playlist Cover Art</Heading>
+        <Heading size={'lg'}>Playlist Cover Art Generator</Heading>
         {/* on blue focus on button */}
         <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={5} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: 'coolGray.100' }} />
         {/* <Spacer /> */}
