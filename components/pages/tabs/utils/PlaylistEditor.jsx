@@ -28,7 +28,7 @@ import CoverImageGenerator from './CoverImageGenerator';
 
 const spotify = new SpotifyWebApi();
 
-function PlaylistEditor({ route, navigation }) {
+function PlaylistEditor({ route, navigation, rootNavigator }) {
   const [sorter, setSorter] = useState('original_position');
   const [sorterDirection, setSorterDirection] = useState('asc');
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,6 @@ function PlaylistEditor({ route, navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const selectedPlaylist = route.params.selectedPlaylist;
   const user = route.params.user;
-  const rootNavigator = route.params.rootNavigator;
   const toast = useToast();
 
   function getKeyByValue(object, value) {
@@ -85,9 +84,11 @@ function PlaylistEditor({ route, navigation }) {
 
   const handlePlaylistCoverPress = () => {
     trigger('impactLight');
+    const playlist = selectedPlaylist;
+    const playlistUser = user;
     rootNavigator.navigate('Cover Image Generator', {
-      selectedPlaylist: selectedPlaylist,
-      user: user,
+      selectedPlaylist: playlist,
+      user: playlistUser,
     });
   }
     

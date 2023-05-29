@@ -70,7 +70,7 @@ export default function CoverImageGenerator({ route, navigation }) {
 
         {image && (
           <>
-            <Text color={'gray.500'}>Cannot set as Spotify cover yet. Coming soon.</Text>
+            <Text color={'gray.500'}>Cannot set as Spotify cover yet, coming soon.</Text>
             <Button flex={1} mb={5} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1DB954'} _pressed={{
               opacity: 0.5,
             }} isDisabled={true}>

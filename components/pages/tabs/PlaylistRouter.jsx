@@ -13,7 +13,9 @@ function PlaylistRouter({rootNavigator, user, playlistData, refreshing, setRefre
       <Stack.Screen name="Playlist Selector">
         {(props) => <PlaylistSelector {...props} rootNavigator={rootNavigator} user={user} playlistData={playlistData} refreshing={refreshing} setRefreshing={setRefreshing} />}
       </Stack.Screen>
-      <Stack.Screen name="Playlist Editor" component={PlaylistEditor} />
+      <Stack.Screen name="Playlist Editor">
+        {(props) => <PlaylistEditor {...props} rootNavigator={rootNavigator} />}
+      </Stack.Screen>
       <Stack.Screen name="Profile">
         {props => <Profile {...props} user={user} />}
       </Stack.Screen>
