@@ -3,12 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NativeBaseProvider } from "native-base";
 import { getData } from './utils/asyncStorage';
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-url-polyfill/auto';
 
 // Import your screens
 import LandingPage from './components/pages/LandingPage';
 import Main from './components/pages/Main';
 import Instructions from './components/pages/tabs/utils/Instructions';
+import CoverImageGenerator from './components/pages/tabs/utils/CoverImageGenerator';
 
 // Create a stack navigator
 const Stack = createStackNavigator();
@@ -50,6 +51,7 @@ export default function App() {
           <Stack.Screen name="Landing" component={LandingPage} options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
           <Stack.Screen name="Instructions" component={Instructions} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="Cover Image Generator" component={CoverImageGenerator} options={{ presentation: 'modal' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

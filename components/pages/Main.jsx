@@ -99,11 +99,17 @@ export default function Main({ navigation }) {
 
       setRefreshing(false);
       toast.closeAll();
-      toast.show({
-        title: "Synced with Spotify",
-        placement: 'top',
-        duration: 1000,
-      });
+      if (!toast.isActive('spotifySynced')) {
+        toast.show({
+          id: 'spotifySynced',
+          title: "Synced with Spotify",
+          placement: 'top',
+          duration: 1000,
+        });
+      }
+      // setTimeout(() => {
+      //   toast.close('spotifySynced');
+      // }, 5000);
 
     } catch (error) {
       console.log("Error fetching data:", error);

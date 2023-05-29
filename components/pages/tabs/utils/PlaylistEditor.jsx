@@ -15,14 +15,16 @@ import { Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Linking from 'expo-linking';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData } from '../../../../utils/asyncStorage';
+import { trigger } from 'react-native-haptic-feedback';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
-import { trigger } from 'react-native-haptic-feedback';
 import LoadingModal from './LoadingModal';
+import { getData } from '../../../../utils/asyncStorage';
+import { sorterOptions, sorterDirections, iconOptions, iconOptionsLeft } from '../utils/jsonHelpers';
+import CoverImageGenerator from './CoverImageGenerator';
 
 const spotify = new SpotifyWebApi();
 
@@ -35,70 +37,8 @@ function PlaylistEditor({ route, navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const selectedPlaylist = route.params.selectedPlaylist;
   const user = route.params.user;
+  const rootNavigator = route.params.rootNavigator;
   const toast = useToast();
-
-  const sorterOptions = {
-    'Original Position': 'original_position',
-    'Name': 'name',
-    'Album Name': 'album_name',
-    'Artist Name': 'artist_name',
-    'Release Date': 'release_date',
-    'Popularity': 'popularity',
-    'Date Added': 'date_added',
-    'Tempo': 'tempo',
-    'Acousticness': 'acousticness',
-    'Danceability': 'danceability',
-    'Energy': 'energy',
-    'Instrumentalness': 'instrumentalness',
-    'Liveness': 'liveness',
-    'Loudness': 'loudness',
-    'Speechiness': 'speechiness',
-    'Valence': 'valence',
-  };
-
-  const iconOptions = {
-    'Original Position': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
-    'Album Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
-    'Artist Name': { 'asc': 'sort-alpha-down', 'desc': 'sort-alpha-down-alt'},
-    'Release Date': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Popularity': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Date Added': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Tempo': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Acousticness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Danceability': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Energy': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Instrumentalness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Liveness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Loudness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Speechiness': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-    'Valence': { 'asc': 'sort-numeric-down', 'desc': 'sort-numeric-down-alt'},
-  };
-
-  const iconOptionsLeft = {
-    'Original Position': 'hashtag',
-    'Name': 'list-ol',
-    'Album Name': 'compact-disc',
-    'Artist Name': 'user',
-    'Release Date': 'calendar-alt',
-    'Popularity': 'fire',
-    'Date Added': 'calendar-plus',
-    'Tempo': 'tachometer-alt',
-    'Acousticness': 'wave-square',
-    'Danceability': 'walking',
-    'Energy': 'bolt',
-    'Instrumentalness': 'guitar',
-    'Liveness': 'microphone-alt',
-    'Loudness': 'volume-up',
-    'Speechiness': 'comment-alt',
-    'Valence': 'heart',
-  };
-
-
-  const sorterDirections = {
-    'asc': 'Ascending',
-    'desc': 'Descending',
-  };
 
   function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
@@ -142,6 +82,15 @@ function PlaylistEditor({ route, navigation }) {
       }
     }
   }
+
+  const handlePlaylistCoverPress = () => {
+    trigger('impactLight');
+    rootNavigator.navigate('Cover Image Generator', {
+      selectedPlaylist: selectedPlaylist,
+      user: user,
+    });
+  }
+    
 
   const handleBackButtonPress = () => {
     trigger('impactLight');
@@ -266,12 +215,18 @@ function PlaylistEditor({ route, navigation }) {
         //trigger('notificationSuccess');
         setTracks(combinedTracks);
         toast.closeAll();
-        toast.show({
-          title: 'Tracks fetched',
-          placement: 'top',
-          duration: 2000,
-        });
+        if (!toast.isActive('tracksFetched')) {
+          toast.show({
+            id: 'tracksFetched',
+            title: 'Tracks fetched',
+            placement: 'top',
+            duration: 2000,
+          });
+        }
         setRefreshing(false);
+        // setTimeout(() => {
+        //   toast.close('tracksFetched');
+        // }, 5000);
 
       })
       .catch((error) => {
@@ -459,8 +414,8 @@ function PlaylistEditor({ route, navigation }) {
               <Container>
                 <Image borderRadius={'sm'} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
               </Container>
-              <VStack space={2}>
-                <Button borderRadius={'lg'} onPress={handleSpotifyButtonPress} flex={1} ml={2} p={3} bgColor={'#1DB954'} _pressed={{
+              <VStack space={1.5} ml={1.5}>
+                <Button borderRadius={'lg'} onPress={handleSpotifyButtonPress} flex={1} py={'1.5'} px={3} bgColor={'#1DB954'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center" flex={1}>
@@ -468,7 +423,15 @@ function PlaylistEditor({ route, navigation }) {
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>
-                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} disabled={selectedPlaylist.owner.id !== user.id ? true:false} flex={1} ml={2} p={3} bgColor={'#e53e3e'} _pressed={{
+                <Button borderRadius={'lg'} onPress={handlePlaylistCoverPress} bgColor={'#1769ef'} flex={1} py={'1.5'} px={3} _pressed={{
+                  opacity: 0.5,
+                }}>
+                  <HStack space={1} alignItems="center">
+                    <Icon name="magic" size={20} color="white" />
+                    <Text color={'white'} fontWeight={'medium'}>Create Cover Art</Text>
+                  </HStack>
+                </Button>
+                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} disabled={selectedPlaylist.owner.id !== user.id ? true:false} flex={1} py={'1.5'} px={3} bgColor={'#e53e3e'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
@@ -476,7 +439,7 @@ function PlaylistEditor({ route, navigation }) {
                     <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
                   </HStack>
                 </Button>
-                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={'white'} flex={1} ml={2} p={3} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={'white'} flex={1} py={'1.5'} px={3} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">

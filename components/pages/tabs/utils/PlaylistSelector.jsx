@@ -7,7 +7,7 @@ function PlaylistSelector({ rootNavigator, user, playlistData, navigation, refre
   const handlePress = async (item) => {
     console.log(item);
     trigger('impactLight');
-    navigation.navigate('Playlist Editor', { user: user, selectedPlaylist: item });
+    navigation.navigate('Playlist Editor', { user: user, selectedPlaylist: item, rootNavigator: rootNavigator });
     const viewedInstructions = await getData('viewedInstructions');
     if (!viewedInstructions||viewedInstructions === 'false') {
       await storeData('viewedInstructions', 'true');

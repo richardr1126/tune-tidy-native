@@ -1,5 +1,4 @@
-import React from 'react';
-import { Text, VStack, HStack, IconButton, Heading, Container, Box, Button, Spacer } from 'native-base';
+import { Text, VStack, HStack, Heading, Container, Box, Button, Spacer } from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default function Instructions({ navigation }) {
