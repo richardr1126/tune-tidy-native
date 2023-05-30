@@ -9,17 +9,18 @@ import {
 } from 'react-native';
 import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser';
 import { storeData, getData } from '../../utils/asyncStorage';
 import { useToast } from 'native-base';
+import pkceChallenge from 'react-native-pkce-challenge';
+
 
 function LandingPage({ navigation }) {
   // Add your CLIENT_ID, REDIRECT_URI, AUTH_ENDPOINT, RESPONSE_TYPE, and SCOPES here
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
-  const REDIRECT_URI = Linking.createURL();
+  const REDIRECT_URI = 'com.tunetidy.native:/';
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-  const RESPONSE_TYPE = "token";
+  const RESPONSE_TYPE = "code";
   const SCOPES = [
     "user-read-private",
     "playlist-read-private",
@@ -32,49 +33,106 @@ function LandingPage({ navigation }) {
 
   const handleLoginButtonPress = async () => {
     toast.closeAll();
-    console.log(REDIRECT_URI);
-    // Replace with in app broswer
+    const { codeChallenge, codeVerifier } = pkceChallenge();
+
+    // Save the codeVerifier in storage
+    await storeData('codeVerifier', codeVerifier);
+
     const result = await WebBrowser.openAuthSessionAsync(
-      `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}`,
+      `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}&response_type=${RESPONSE_TYPE}&code_challenge=${codeChallenge}&code_challenge_method=S256`,
       REDIRECT_URI
     );
-    console.log(result);
+    
+
     if (result.type === 'success') {
-      const token = result.url.split('#')[1].split('&')[0].split('=')[1];
-      const tokenExpiration = JSON.stringify(Date.now() + 3600000);
-      await storeData('token', token);
-      await storeData('tokenExpiration', tokenExpiration);
-      console.log(await getData('token'));
-      console.log(await getData('tokenExpiration'));
-      navigation.navigate('Main');
+      const authCode = new URL(result.url).searchParams.get('code');
+      const codeVerifierFromStorage = await getData('codeVerifier');
+
+      let body = `grant_type=authorization_code&code=${authCode}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&client_id=${CLIENT_ID}&code_verifier=${codeVerifierFromStorage}`;
+
+      fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      })
+        .then(response => {
+          if (!response.ok) {
+            response.text().then(text => {
+              console.error(`HTTP status ${response.status}. Message: ${text}`);
+            });
+            throw new Error('HTTP status ' + response.status);
+          }
+          return response.json();
+        })
+        .then(async data => {
+          console.log(data);
+          const token = data.access_token;
+          // const tokenExpiration = JSON.stringify(Date.now() + data.expires_in * 1000);
+          const tokenExpiration = JSON.stringify(Date.now() + 2700000);
+          await storeData('token', token);
+          await storeData('refreshToken', data.refresh_token);
+          await storeData('tokenExpiration', tokenExpiration);
+          navigation.navigate('Main');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
-
-
   };
 
 
 
+
+  const refreshAccessToken = async () => {
+    const refreshToken = await getData('refreshToken');
+  
+    // Prepare the request body
+    let body = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}`;
+  
+    try {
+      // Fetch the new access token
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      });
+  
+      if (!response.ok) {
+        throw new Error('HTTP status ' + response.status);
+      }
+  
+      const data = await response.json();
+  
+      const tokenExpiration = JSON.stringify(Date.now() + 2700000);
+      await storeData('token', data.access_token);
+      await storeData('tokenExpiration', tokenExpiration);
+      console.log(await getData('token'));
+      console.log(await getData('tokenExpiration'));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
   const checkTokenExpiration = async () => {
     const tokenExpiration = await getData('tokenExpiration');
     if (tokenExpiration !== null) {
       if (Date.now() > tokenExpiration) {
-        console.log('tokenExpiration is expired, getting a new one');
-        toast.show({
-          title: "Your session has expired, please log in again.",
-          placement: 'top',
-          duration: 2000,
-        });
-        handleLoginButtonPress();
+        console.log('tokenExpiration is expired, refreshing');
+        refreshAccessToken();
       }
     }
-  }
+  };  
 
   useEffect(() => {
     // If tokenExpiration is not null, automatically call handleLoginButtonPress
     // to refresh the token if it has expired
     checkTokenExpiration();
     //check if device is in dark mode
-    
+
   }, []);
 
   return (

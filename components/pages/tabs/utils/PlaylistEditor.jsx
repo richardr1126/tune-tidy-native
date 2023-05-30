@@ -117,8 +117,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
   const checkTokenExpiration = async () => {
     const tokenExpiration = await getData('tokenExpiration');
     if (tokenExpiration !== null) {
-      //check if token will expire in next 15 minutes
-      if (Date.now() > tokenExpiration - 900000) {
+      if (Date.now() > tokenExpiration) {
         console.log('tokenExpiration is expired, getting a new one');
         redirectLogin();
         return false;
