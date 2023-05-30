@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Text, HStack, Heading, Image, Box, Button, Spacer, TextArea, Center, Spinner } from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -9,6 +9,7 @@ import { Image as Compressor } from 'react-native-compressor';
 
 // OpenAI API
 import { REACT_APP_OPENAI_API_KEY, REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
+import { parse } from 'expo-linking';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   apiKey: REACT_APP_OPENAI_API_KEY,
@@ -21,6 +22,7 @@ export default function CoverImageGenerator({ route, navigation }) {
   const user = route.params.user;
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useState(null);
+  const [generationLimit, setGenerationLimit] = useState(5);
   const [imageString, setImageString] = useState(null);
   const [loading, setLoading] = useState(false);
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
@@ -29,6 +31,7 @@ export default function CoverImageGenerator({ route, navigation }) {
     setLoading(true);
     trigger('impactLight');
     console.log(prompt);
+
     await openai.createImage({
       user: user.id,
       prompt: prompt,
@@ -53,11 +56,36 @@ export default function CoverImageGenerator({ route, navigation }) {
       setImageString(imageString);
       
       setLoading(false);
+      await addToGenerationLimit();
 
     }).catch((err) => {
       console.log(err);
     });
   }
+
+  const addToGenerationLimit = async () => {
+    const generationLimit = await getGenerationLimit();
+    const newGenerationLimitString = JSON.stringify(generationLimit + 1);
+    await storeData('generationLimit', newGenerationLimitString);
+    setGenerationLimit(generationLimit + 1);
+  }
+
+  const getGenerationLimit = async () => {
+    const generationLimitString = await getData('generationLimit');
+    const generationLimit = parseInt(generationLimitString);
+    console.log('generationLimit is: ', generationLimit);
+    if (generationLimit === null||isNaN(generationLimit)) {
+      return 0;
+    } else {
+      return generationLimit;
+    }
+  }
+
+  useEffect(() => {
+    getGenerationLimit().then((generationLimit) => {
+      setGenerationLimit(generationLimit);
+    });
+  }, []);
 
   const refreshAccessToken = async () => {
     const refreshToken = await getData('refreshToken');
@@ -91,7 +119,6 @@ export default function CoverImageGenerator({ route, navigation }) {
     }
   };
 
-
   const setAccessToken = async () => {
     const token = await refreshAccessToken();
     //console.log('token is: ', token);
@@ -113,18 +140,18 @@ export default function CoverImageGenerator({ route, navigation }) {
     }
   }
 
-
   return (
     <TouchableWithoutFeedback
       onPress={() => { Keyboard.dismiss(); }}>
       <Box flex={1} p={6} bgColor='white' borderRadius='lg'>
         <Heading size={'lg'}>Playlist Cover Art Generator</Heading>
         {/* on blue focus on button */}
-        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={5} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: 'coolGray.100' }} />
+        <Text mt={5} fontSize={'md'} fontWeight={'medium'}>{3-generationLimit} generations left today</Text>
+        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: 'coolGray.100' }} />
         {/* <Spacer /> */}
         <Button flex={1} mt={3} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1769ef'} _pressed={{
           opacity: 0.5,
-        }} isDisabled={loading}>
+        }} isDisabled={loading||generationLimit>=3||!prompt}>
           <HStack space={2} alignItems="center">
             <FontAwesome5 name="magic" size={20} color="white" />
             <Text color={'white'} fontWeight={'semibold'}>Generate Cover</Text>
@@ -141,7 +168,7 @@ export default function CoverImageGenerator({ route, navigation }) {
           <>
             <Button flex={1} mb={5} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleSetCoverPress} p={2} bgColor={'#1DB954'} _pressed={{
               opacity: 0.5,
-            }} isDisabled={loading}>
+            }} isDisabled={loading||generationLimit>=3}>
               <HStack space={2} alignItems="center">
                 <FontAwesome5 name="save" size={20} color="white" />
                 <Text color={'white'} fontWeight={'semibold'}>Set as Playlist Cover</Text>

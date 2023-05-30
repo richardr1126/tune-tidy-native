@@ -142,7 +142,7 @@ export default function Main({ navigation }) {
           id: 'spotifySynced',
           title: "Synced with Spotify",
           placement: 'top',
-          duration: 500,
+          duration: 300,
         });
       }
       // setTimeout(() => {

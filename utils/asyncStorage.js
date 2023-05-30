@@ -24,7 +24,10 @@ export async function getData(key) {
 
 export async function clear() {
   try {
+    //extract key 'generationLimit'
+    const generationLimit = await getData('generationLimit');
     await AsyncStorage.clear()
+    await storeData('generationLimit', generationLimit);
   } catch (e) {
     // clear error
   }
