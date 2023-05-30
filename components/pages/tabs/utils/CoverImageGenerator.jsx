@@ -4,10 +4,11 @@ import { Text, HStack, Heading, Image, Box, Button, Spacer, TextArea, Center, Sp
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { trigger } from 'react-native-haptic-feedback';
 import SpotifyWebApi from 'spotify-web-api-js';
-
+import { getData, storeData } from '../../../../utils/asyncStorage';
+import { Image as Compressor } from 'react-native-compressor';
 
 // OpenAI API
-import { REACT_APP_OPENAI_API_KEY } from '@env';
+import { REACT_APP_OPENAI_API_KEY, REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   apiKey: REACT_APP_OPENAI_API_KEY,
@@ -20,7 +21,9 @@ export default function CoverImageGenerator({ route, navigation }) {
   const user = route.params.user;
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useState(null);
+  const [imageString, setImageString] = useState(null);
   const [loading, setLoading] = useState(false);
+  const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
 
   const handleGeneratePress = async () => {
     setLoading(true);
@@ -32,16 +35,84 @@ export default function CoverImageGenerator({ route, navigation }) {
       n: 1,
       size: "512x512",
       response_format: "b64_json"
-    }).then((response) => {
+    }).then(async (response) => {
       const base64Image = response.data.data[0].b64_json;
-      const base64ImageString = `data:image/jpeg;base64,${base64Image}`;
-      console.log(base64ImageString);
-      setImage(base64ImageString);
+      const compressedImage = await Compressor.compress(base64Image, {
+        compressionMethod: 'manual',
+        quality: 0.2,
+        input: 'base64',
+        output: 'jpg',
+        returnableOutputType: 'base64',
+      });
+      let sizeInBytes = (compressedImage.length * 3) / 4; // because base64 inflates the size by 1/3
+      let sizeInKB = sizeInBytes / 1024;
+      console.log(sizeInKB); // log the size
+
+      const imageString = `data:image/jpeg;base64,${compressedImage}`;
+      setImage(compressedImage);
+      setImageString(imageString);
+      
       setLoading(false);
 
     }).catch((err) => {
       console.log(err);
     });
+  }
+
+  const refreshAccessToken = async () => {
+    const refreshToken = await getData('refreshToken');
+
+    // Prepare the request body
+    let body = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}`;
+
+    try {
+      // Fetch the new access token
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      });
+
+      if (!response.ok) {
+        throw new Error('HTTP status ' + response.status);
+      }
+
+      const data = await response.json();
+
+      const tokenExpiration = JSON.stringify(Date.now() + 2700000);
+      await storeData('token', data.access_token);
+      await storeData('tokenExpiration', tokenExpiration);
+      await storeData('refreshToken', data.refresh_token);
+      return data.access_token;
+      // console.log(await getData('token'));
+      // console.log(await getData('tokenExpiration'));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+
+  const setAccessToken = async () => {
+    const token = await refreshAccessToken();
+    console.log('token is: ', token);
+    spotify.setAccessToken(token);
+    return token;
+  }
+
+  const handleSetCoverPress = async () => {
+    try {
+      setLoading(true);
+      await setAccessToken();
+      await spotify.uploadCustomPlaylistCoverImage(selectedPlaylist.id, image);
+      setLoading(false);
+      //console.log(response);
+      navigation.goBack();
+      route.params.setRefreshing(true);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 
@@ -63,17 +134,16 @@ export default function CoverImageGenerator({ route, navigation }) {
         </Button>
         {/* base 64 image */}
         <Center mt={5}>
-          {!loading && <Image source={{ uri: image }} alt="Generated Image" size={'2xl'} rounded={'sm'} />}
+          {!loading && <Image source={{ uri: imageString }} alt="Generated Image" size={'2xl'} rounded={'sm'} />}
           {loading && <Spinner accessibilityLabel="Loading..." size={'sm'} color={'grey'} />}
         </Center>
         <Spacer />
 
         {image && (
           <>
-            <Text color={'gray.500'}>Cannot set as Spotify cover yet, coming soon.</Text>
-            <Button flex={1} mb={5} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1DB954'} _pressed={{
+            <Button flex={1} mb={5} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleSetCoverPress} p={2} bgColor={'#1DB954'} _pressed={{
               opacity: 0.5,
-            }} isDisabled={true}>
+            }} isDisabled={loading}>
               <HStack space={2} alignItems="center">
                 <FontAwesome5 name="save" size={20} color="white" />
                 <Text color={'white'} fontWeight={'semibold'}>Set as Playlist Cover</Text>

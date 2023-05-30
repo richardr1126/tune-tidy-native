@@ -16,11 +16,13 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "10",
+      "buildNumber": "12",
       "supportsTablet": true,
       "bundleIdentifier": "com.tunetidy.native",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -40,6 +42,9 @@
       "eas": {
         "projectId": "2fe83fd6-d846-4cfa-8c7a-1db0672815ad"
       }
-    }
+    },
+    "plugins": [
+      "react-native-compressor"
+    ]
   }
 }

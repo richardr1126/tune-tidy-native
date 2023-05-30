@@ -1,14 +1,17 @@
-import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable, Avatar } from "native-base";
+import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable, Avatar, useToast } from "native-base";
 import { trigger } from 'react-native-haptic-feedback'
 import { getData, storeData } from '../../../../utils/asyncStorage';
 import { StatusBar } from 'expo-status-bar';
 
 function PlaylistSelector({ rootNavigator, user, playlistData, navigation, refreshing, setRefreshing }) {
+  const toast = useToast();
+  const viewedInstructions = getData('viewedInstructions');
+
   const handlePress = async (item) => {
     console.log(item);
     trigger('impactLight');
+    //toast.close('spotifySynced');
     navigation.navigate('Playlist Editor', { user: user, selectedPlaylist: item });
-    const viewedInstructions = await getData('viewedInstructions');
     if (!viewedInstructions||viewedInstructions === 'false') {
       await storeData('viewedInstructions', 'true');
       rootNavigator.navigate('Instructions');

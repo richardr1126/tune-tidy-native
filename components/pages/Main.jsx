@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import SpotifyWebApi from 'spotify-web-api-js';
-import { getData } from '../../utils/asyncStorage';
+import { getData, storeData } from '../../utils/asyncStorage';
 import TopArtists from './tabs/TopArtists';
 import TopTracks from './tabs/TopTracks';
 import TopAlbums from './tabs/TopAlbums';
 import PlaylistRouter from './tabs/PlaylistRouter';
+import {REACT_APP_SPOTIFY_CLIENT_ID} from '@env';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useToast } from 'native-base';
@@ -30,17 +31,54 @@ export default function Main({ navigation }) {
     medium_term: null,
     long_term: null,
   });
+  const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
+
+  const refreshAccessToken = async () => {
+    const refreshToken = await getData('refreshToken');
+  
+    // Prepare the request body
+    let body = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}`;
+  
+    try {
+      // Fetch the new access token
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      });
+  
+      if (!response.ok) {
+        throw new Error('HTTP status ' + response.status);
+      }
+  
+      const data = await response.json();
+  
+      const tokenExpiration = JSON.stringify(Date.now() + 2700000);
+      await storeData('token', data.access_token);
+      await storeData('tokenExpiration', tokenExpiration);
+      await storeData('refreshToken', data.refresh_token);
+      return data.access_token;
+      // console.log(await getData('token'));
+      // console.log(await getData('tokenExpiration'));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
 
   const setAccessToken = async () => {
-    const token = await getData('token');
+    const token = await refreshAccessToken();
     console.log('token is: ', token);
     spotify.setAccessToken(token);
     return token;
   }
 
-  const redirectLogin = () => {
+  const errorFetching = () => {
     //clear();
-    navigation.navigate('Landing');
+    //navigation.navigate('Landing');
+    setAccessToken();
   }
 
   const extractArtistData = (artist) => ({
@@ -113,7 +151,7 @@ export default function Main({ navigation }) {
 
     } catch (error) {
       console.log("Error fetching data:", error);
-      redirectLogin();
+      errorFetching();
     }
   };
 

@@ -22,9 +22,9 @@ import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
 import LoadingModal from './LoadingModal';
-import { getData } from '../../../../utils/asyncStorage';
+import { getData, storeData } from '../../../../utils/asyncStorage';
 import { sorterOptions, sorterDirections, iconOptions, iconOptionsLeft } from '../utils/jsonHelpers';
-import CoverImageGenerator from './CoverImageGenerator';
+import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 
 const spotify = new SpotifyWebApi();
 
@@ -35,9 +35,10 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
   const [progress, setProgress] = useState(0);
   const [tracks, setTracks] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const selectedPlaylist = route.params.selectedPlaylist;
+  const [selectedPlaylist, setSelectedPlaylist] = useState(route.params.selectedPlaylist);
   const user = route.params.user;
   const toast = useToast();
+  const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
 
   function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
@@ -89,6 +90,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     rootNavigator.navigate('Cover Image Generator', {
       selectedPlaylist: playlist,
       user: playlistUser,
+      setRefreshing: setRefreshing,
     });
   }
     
@@ -97,6 +99,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     trigger('impactLight');
     //setSelectedPlaylist(null);
     navigation.navigate('Playlist Selector');
+    //toast.closeAll();
     //setTracks(null);
     setSorter('original_position');
 
@@ -107,35 +110,54 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     Linking.openURL(selectedPlaylist.external_urls.spotify);
   }
 
-  const redirectLogin = () => {
+  const errorFetching = () => {
     //clear();
     trigger('notificationError');
-    navigation.goBack();
-    navigation.navigate('Landing');
+    // navigation.goBack();
+    // navigation.navigate('Landing');
+    setAccessToken();
   }
 
-  const checkTokenExpiration = async () => {
-    const tokenExpiration = await getData('tokenExpiration');
-    if (tokenExpiration !== null) {
-      if (Date.now() > tokenExpiration) {
-        console.log('tokenExpiration is expired, getting a new one');
-        redirectLogin();
-        return false;
-      } else {
-        return true;
+  const refreshAccessToken = async () => {
+    const refreshToken = await getData('refreshToken');
+  
+    // Prepare the request body
+    let body = `grant_type=refresh_token&refresh_token=${refreshToken}&client_id=${CLIENT_ID}`;
+  
+    try {
+      // Fetch the new access token
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      });
+  
+      if (!response.ok) {
+        throw new Error('HTTP status ' + response.status);
       }
+  
+      const data = await response.json();
+  
+      const tokenExpiration = JSON.stringify(Date.now() + 2700000);
+      await storeData('token', data.access_token);
+      await storeData('tokenExpiration', tokenExpiration);
+      await storeData('refreshToken', data.refresh_token);
+      return data.access_token;
+      // console.log(await getData('token'));
+      // console.log(await getData('tokenExpiration'));
+    } catch (error) {
+      console.error('Error:', error);
     }
-  }
+  };
+
 
   const setAccessToken = async () => {
-    if (await checkTokenExpiration()) {
-      const token = await getData('token');
-      console.log('token is: ', token);
-      spotify.setAccessToken(token);
-      return token;
-    } else {
-      return null;
-    }
+    const token = await refreshAccessToken();
+    console.log('token is: ', token);
+    spotify.setAccessToken(token);
+    return token;
   }
 
   // A function to fetch user's top tracks using Spotify Web API
@@ -145,6 +167,14 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     }
     const id = selectedPlaylist.id;
     console.log('id: ', id);
+    spotify.getPlaylist(id).then((data) => {
+      console.log('Fetched playlist');
+      setSelectedPlaylist(data);
+      console.log(data);
+    }).catch((error) => {
+      console.log("Error fetching playlist:", error);
+      errorFetching();
+    });
 
     //https://jmperezperez.com/spotify-web-api-js/
     spotify.getPlaylistTracks(id, { limit: 50 })
@@ -162,7 +192,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
               combinedTracks = combinedTracks.concat(additionalData.items);
             } catch (error) {
               console.log("Error fetching more tracks from playlist:", error);
-              redirectLogin();
+              errorFetching();
               return;
             }
           }
@@ -231,7 +261,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
       })
       .catch((error) => {
         console.log("Error fetching tracks from playlist:", error);
-        redirectLogin();
+        errorFetching();
       });
   }
 
@@ -281,7 +311,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
           }
         } catch (error) {
           console.error(`Error reordering track from position ${currentPosition} to ${newPosition}:`, error);
-          redirectLogin();
+          errorFetching();
           return;
         }
       }
@@ -326,7 +356,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
 
     }).catch((error) => {
       console.log(error);
-      redirectLogin();
+      errorFetching();
     });
     trigger('notificationSuccess');
     toast.show({
@@ -382,7 +412,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
 
         } catch (error) {
           console.log("Error fetching tracks:", error);
-          redirectLogin();
+          errorFetching();
         }
 
 

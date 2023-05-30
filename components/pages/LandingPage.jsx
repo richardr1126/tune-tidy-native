@@ -28,6 +28,7 @@ function LandingPage({ navigation }) {
     "playlist-modify-public",
     "playlist-modify-private",
     "user-top-read",
+    "ugc-image-upload"
   ].join("%20");
   const toast = useToast();
 
@@ -83,8 +84,6 @@ function LandingPage({ navigation }) {
   };
 
 
-
-
   const refreshAccessToken = async () => {
     const refreshToken = await getData('refreshToken');
   
@@ -110,8 +109,9 @@ function LandingPage({ navigation }) {
       const tokenExpiration = JSON.stringify(Date.now() + 2700000);
       await storeData('token', data.access_token);
       await storeData('tokenExpiration', tokenExpiration);
-      console.log(await getData('token'));
-      console.log(await getData('tokenExpiration'));
+      await storeData('refreshToken', data.refresh_token);
+      // console.log(await getData('token'));
+      // console.log(await getData('tokenExpiration'));
     } catch (error) {
       console.error('Error:', error);
     }
