@@ -20,7 +20,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   const checkTokenExpiration = async () => {
-    const tokenExpiration = await getData('tokenExpiration');
+    const tokenExpiration = await getData('tokenExpiration2');
     if (tokenExpiration !== null) {
       console.log('tokenExpiration is not null');
       if (Date.now() < tokenExpiration) {

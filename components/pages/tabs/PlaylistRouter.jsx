@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import PlaylistSelector from "./utils/PlaylistSelector";
 import PlaylistEditor from "./utils/PlaylistEditor";
 import Profile from './utils/Profile';
-import Instructions from './utils/Instructions';
 
 const Stack = createStackNavigator();
 

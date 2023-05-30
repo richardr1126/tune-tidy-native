@@ -56,8 +56,8 @@ export default function Main({ navigation }) {
       const data = await response.json();
   
       const tokenExpiration = JSON.stringify(Date.now() + 2700000);
-      await storeData('token', data.access_token);
-      await storeData('tokenExpiration', tokenExpiration);
+      await storeData('token2', data.access_token);
+      await storeData('tokenExpiration2', tokenExpiration);
       await storeData('refreshToken', data.refresh_token);
       return data.access_token;
       // console.log(await getData('token'));
@@ -142,7 +142,7 @@ export default function Main({ navigation }) {
           id: 'spotifySynced',
           title: "Synced with Spotify",
           placement: 'top',
-          duration: 1000,
+          duration: 500,
         });
       }
       // setTimeout(() => {

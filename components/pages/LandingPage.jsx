@@ -72,9 +72,9 @@ function LandingPage({ navigation }) {
           const token = data.access_token;
           // const tokenExpiration = JSON.stringify(Date.now() + data.expires_in * 1000);
           const tokenExpiration = JSON.stringify(Date.now() + 2700000);
-          await storeData('token', token);
+          await storeData('token2', token);
           await storeData('refreshToken', data.refresh_token);
-          await storeData('tokenExpiration', tokenExpiration);
+          await storeData('tokenExpiration2', tokenExpiration);
           navigation.navigate('Main');
         })
         .catch(error => {
@@ -107,8 +107,8 @@ function LandingPage({ navigation }) {
       const data = await response.json();
   
       const tokenExpiration = JSON.stringify(Date.now() + 2700000);
-      await storeData('token', data.access_token);
-      await storeData('tokenExpiration', tokenExpiration);
+      await storeData('token2', data.access_token);
+      await storeData('tokenExpiration2', tokenExpiration);
       await storeData('refreshToken', data.refresh_token);
       // console.log(await getData('token'));
       // console.log(await getData('tokenExpiration'));
@@ -118,7 +118,7 @@ function LandingPage({ navigation }) {
   };
   
   const checkTokenExpiration = async () => {
-    const tokenExpiration = await getData('tokenExpiration');
+    const tokenExpiration = await getData('tokenExpiration2');
     if (tokenExpiration !== null) {
       if (Date.now() > tokenExpiration) {
         console.log('tokenExpiration is expired, refreshing');
