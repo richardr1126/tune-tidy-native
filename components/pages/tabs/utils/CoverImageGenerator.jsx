@@ -94,7 +94,7 @@ export default function CoverImageGenerator({ route, navigation }) {
 
   const setAccessToken = async () => {
     const token = await refreshAccessToken();
-    console.log('token is: ', token);
+    //console.log('token is: ', token);
     spotify.setAccessToken(token);
     return token;
   }
