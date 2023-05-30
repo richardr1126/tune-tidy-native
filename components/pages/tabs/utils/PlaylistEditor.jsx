@@ -97,12 +97,11 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
 
   const handleBackButtonPress = () => {
     trigger('impactLight');
+    setSorter('original_position');
     //setSelectedPlaylist(null);
     navigation.navigate('Playlist Selector');
     //toast.closeAll();
     //setTracks(null);
-    setSorter('original_position');
-
   }
 
   const handleSpotifyButtonPress = () => {
@@ -421,10 +420,18 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     asyncLoader();
   }, [refreshing]);
 
+  const checkViewedInstructions = async () => {
+    const viewedInstructions = await getData('viewedInstructions');
+    if (!viewedInstructions||viewedInstructions === 'false') {
+      rootNavigator.navigate('Instructions');
+    }
+  }
+
   useEffect(() => {
     if (!tracks) {
       setRefreshing(true);
     }
+    checkViewedInstructions();
   }, []);
 
 

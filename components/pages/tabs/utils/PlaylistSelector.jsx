@@ -5,17 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 
 function PlaylistSelector({ rootNavigator, user, playlistData, navigation, refreshing, setRefreshing }) {
   const toast = useToast();
-  const viewedInstructions = getData('viewedInstructions');
+  
 
   const handlePress = async (item) => {
-    console.log(item);
+    //console.log(item);
     trigger('impactLight');
     //toast.close('spotifySynced');
     navigation.navigate('Playlist Editor', { user: user, selectedPlaylist: item });
-    if (!viewedInstructions||viewedInstructions === 'false') {
-      await storeData('viewedInstructions', 'true');
-      rootNavigator.navigate('Instructions');
-    }
+    
   }
 
 

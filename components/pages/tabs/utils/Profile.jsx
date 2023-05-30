@@ -16,8 +16,8 @@ export default function Profile({ user, navigation }) {
     Linking.openURL(user?.external_urls?.spotify);
   }
 
-  const handleLogoutButtonPress = () => {
-    clear();
+  const handleLogoutButtonPress = async () => {
+    await clear();
     navigation.goBack();
     navigation.navigate('Landing');
   }

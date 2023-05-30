@@ -1,10 +1,14 @@
 import { Text, VStack, HStack, Heading, Container, Box, Button, Spacer } from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { storeData } from '../../../../utils/asyncStorage';
 
 export default function Instructions({ navigation }) {
-  const handleGetStartedPressed = () => {
+  const handleGetStartedPressed = async () => {
+    await storeData('viewedInstructions', 'true');
     navigation.goBack();
   }
+
+  
 
   return (
     <Box flex={1} p={8} bgColor='white' borderRadius='lg'>
