@@ -1,12 +1,8 @@
 import { VStack, FlatList, Heading, Container, Text, HStack, Image, Pressable, Avatar, useToast } from "native-base";
 import { trigger } from 'react-native-haptic-feedback'
-import { getData, storeData } from '../../../../utils/asyncStorage';
 import { StatusBar } from 'expo-status-bar';
 
-function PlaylistSelector({ rootNavigator, user, playlistData, navigation, refreshing, setRefreshing }) {
-  const toast = useToast();
-  
-
+function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefreshing }) {
   const handlePress = async (item) => {
     //console.log(item);
     trigger('impactLight');

@@ -8,8 +8,6 @@ export default function Instructions({ navigation }) {
     navigation.goBack();
   }
 
-  
-
   return (
     <Box flex={1} p={8} bgColor='white' borderRadius='lg'>
       <Container flex={1}>

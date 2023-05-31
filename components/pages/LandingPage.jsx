@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, memo } from 'react';
 import {
   View,
   Text,
@@ -275,4 +275,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LandingPage;
+export default memo(LandingPage);

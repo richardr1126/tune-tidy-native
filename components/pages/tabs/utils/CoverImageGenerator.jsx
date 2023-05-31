@@ -9,7 +9,6 @@ import { Image as Compressor } from 'react-native-compressor';
 
 // OpenAI API
 import { REACT_APP_OPENAI_API_KEY, REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
-import { parse } from 'expo-linking';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   apiKey: REACT_APP_OPENAI_API_KEY,
