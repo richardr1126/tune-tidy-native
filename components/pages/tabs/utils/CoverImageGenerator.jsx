@@ -64,28 +64,47 @@ export default function CoverImageGenerator({ route, navigation }) {
   }
 
   const addToGenerationLimit = async () => {
-    const generationLimit = await getGenerationLimit();
+    const currentDateString = new Date().toDateString();
+    const lastUpdateDateString = await getData('lastUpdateDate');
+    
+    let generationLimit = await getGenerationLimit();
+  
+    if (currentDateString !== lastUpdateDateString) {
+      generationLimit = 0;
+      await storeData('lastUpdateDate', currentDateString);
+    }
+  
     const newGenerationLimitString = JSON.stringify(generationLimit + 1);
     await storeData('generationLimit', newGenerationLimitString);
     setGenerationLimit(generationLimit + 1);
   }
-
+  
   const getGenerationLimit = async () => {
+    const currentDateString = new Date().toDateString();
+    const lastUpdateDateString = await getData('lastUpdateDate');
+  
+    if (currentDateString !== lastUpdateDateString) {
+      await storeData('lastUpdateDate', currentDateString);
+      await storeData('generationLimit', '0');
+      return 0;
+    }
+  
     const generationLimitString = await getData('generationLimit');
     const generationLimit = parseInt(generationLimitString);
     console.log('generationLimit is: ', generationLimit);
-    if (generationLimit === null||isNaN(generationLimit)) {
+    if (generationLimit === null || isNaN(generationLimit)) {
       return 0;
     } else {
       return generationLimit;
     }
   }
-
+  
   useEffect(() => {
     getGenerationLimit().then((generationLimit) => {
       setGenerationLimit(generationLimit);
     });
   }, []);
+  
 
   const refreshAccessToken = async () => {
     const refreshToken = await getData('refreshToken');
