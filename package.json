@@ -12,7 +12,7 @@
     "@react-navigation/material-top-tabs": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
-    "expo": "~48.0.15",
+    "expo": "~48.0.18",
     "expo-linking": "~4.0.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
