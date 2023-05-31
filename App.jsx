@@ -19,22 +19,16 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkTokenExpiration = async () => {
-    const tokenExpiration = await getData('tokenExpiration2');
-    if (tokenExpiration !== null) {
-      console.log('tokenExpiration is not null');
-      if (Date.now() < tokenExpiration) {
-        setLoggedIn(true);
-      }
-    } else {
-      console.log('tokenExpiration is null');
-      setLoggedIn(false);
+  const checkRefreshToken = async () => {
+    const refreshToken = await getData('refreshToken');
+    if (refreshToken) {
+      setLoggedIn(true);
     }
-    setIsLoading(false); // loading completed
+    setIsLoading(false);
   }
 
   useEffect(() => {
-    checkTokenExpiration();
+    checkRefreshToken();
     //make status bar black
     //console.log(REACT_APP_NODE_ENV);
     //console.log(Linking.createURL());
