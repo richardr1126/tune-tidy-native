@@ -19,7 +19,7 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
         }}>
           <HStack alignItems="center">
             <Image
-              source={{ uri: item.image }}
+              source={{ uri: item?.image }}
               boxSize={'45px'}
               resizeMode="cover"
               alt="Album Art"

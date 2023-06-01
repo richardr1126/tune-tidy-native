@@ -20,7 +20,7 @@ const ArtistCard = ({ item, index }) => {
           }]
         }}>
           <HStack alignItems="center">
-            <Avatar mr={2} size="md" source={{ uri: item.image }} />
+            <Avatar mr={2} size="md" source={{ uri: item?.image }} />
             <Text mr={1} fontWeight='bold' fontSize='xl'>{index + 1}.</Text>
             <Text mr={'18px'} flexShrink={1} flexWrap="wrap" fontWeight='black' fontSize='xl'>{item.name}</Text>
           </HStack>

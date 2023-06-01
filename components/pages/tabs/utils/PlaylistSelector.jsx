@@ -47,7 +47,7 @@ function PlaylistSelector({ user, playlistData, navigation, refreshing, setRefre
                 }}>
                   <HStack alignItems="center">
                     <Image
-                      source={{ uri: item.images[0].url }}
+                      source={{ uri: item?.images[0]?.url }}
                       boxSize={'80px'}
                       resizeMode="cover"
                       alt="Playlist Cover"
