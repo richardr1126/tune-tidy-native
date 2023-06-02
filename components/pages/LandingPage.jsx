@@ -146,14 +146,14 @@ function LandingPage({ navigation }) {
           <Text style={styles.title}>TuneTidy</Text>
         </View>
         <Text style={styles.subtitle}>
-          Spotify Playlist Sorter and Music Manager
+          Spotify Playlist Sorter and Stats Viewer
         </Text>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Welcome to TuneTidy!</Text>
           <View style={styles.listContainer}>
             <View style={{ ...styles.listItem, marginBottom: 20 }}>
               <Text style={styles.listText}>
-                Completely free to use, no ads, no data collection, no tracking, no cookies, no analytics, no selling your data.
+                Completely free to use, no ads, and no data collection.
               </Text>
             </View>
             <View style={styles.listItem}>
@@ -165,13 +165,13 @@ function LandingPage({ navigation }) {
             <View style={styles.listItem}>
               <Icon name="clipboard" size={24} style={styles.listIcon} />
               <Text style={styles.listText}>
-                Access your most frequently played tracks, artists, albums, and genres for three different time periods. Your data is refreshed about once a day.
+                Access your most frequently played tracks, artists, and albums for three different time periods. Your data is refreshed about once a day.
               </Text>
             </View>
             <View style={styles.listItem}>
-              <Icon name="arrows-v" size={24} style={styles.listIcon} />
+              <Icon name="magic" size={24} style={styles.listIcon} />
               <Text style={styles.listText}>
-                Observe how your rankings evolve over time, represented by arrows in comparison to your previous visit.
+                Generate AI Playlist Covers for your playlists by describing your new playlist cover with as much detail as possible.
               </Text>
             </View>
           </View>
@@ -227,11 +227,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     backgroundColor: '#edf2f7',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
     width: '100%',
   },
   cardTitle: {
