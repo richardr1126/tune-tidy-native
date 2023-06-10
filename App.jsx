@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, extendTheme } from "native-base";
 import { getData } from './utils/asyncStorage';
 import 'react-native-url-polyfill/auto';
+
 
 // Import your screens
 import LandingPage from './components/pages/LandingPage';
@@ -27,6 +28,13 @@ export default function App() {
     setIsLoading(false);
   }
 
+  const theme = extendTheme({
+    config: {
+      initialColorMode: 'dark', // set the initial color mode
+      useSystemColorMode: true, // set to true to use the system color mode
+    },
+  });
+
   useEffect(() => {
     checkRefreshToken();
     //make status bar black
@@ -39,7 +47,7 @@ export default function App() {
   }
 
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName={loggedIn ? 'Main' : 'Landing'} screenOptions={{ headerShown: false, freezeOnBlur: true }}>
           <Stack.Screen name="Landing" component={LandingPage} options={{ headerShown: false, gestureEnabled: false }} />

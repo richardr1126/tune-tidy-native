@@ -7,6 +7,7 @@ import TopTracks from './tabs/TopTracks';
 import TopAlbums from './tabs/TopAlbums';
 import PlaylistRouter from './tabs/PlaylistRouter';
 import {REACT_APP_SPOTIFY_CLIENT_ID} from '@env';
+import { useColorModeValue } from 'native-base';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useToast } from 'native-base';
@@ -17,6 +18,8 @@ const spotify = new SpotifyWebApi();
 
 // Define the main tabs component
 export default function Main({ navigation }) {
+  const bgColor = useColorModeValue('#f2f2f2', 'black');
+  const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
   const toast = useToast();
   const [user, setUser] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
@@ -32,6 +35,7 @@ export default function Main({ navigation }) {
     long_term: null,
   });
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
+  
 
   const refreshAccessToken = async () => {
     const refreshToken = await getData('refreshToken');
@@ -185,7 +189,7 @@ export default function Main({ navigation }) {
       screenOptions={{
         tabBarActiveTintColor: '#1DB954',
         tabBarInactiveTintColor: 'grey',
-        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 1, borderColor: '#e5e5e5', elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
+        tabBarStyle: { backgroundColor: bgColor, borderTopWidth: 1, borderColor: borderColor, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
         headerShown: false,
         swipeEnabled: true,
         lazy: true,
@@ -193,6 +197,7 @@ export default function Main({ navigation }) {
         tabBarIndicatorStyle: { backgroundColor: '#1DB954' },
         tabBarLabelStyle: { fontSize: 13, fontWeight: '700' },
       }}
+      sceneContainerStyle={{ backgroundColor: bgColor }}
       tabBarPosition='bottom'
       initialRouteName='Sorter'
     >

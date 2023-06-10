@@ -3,7 +3,11 @@ import { Pressable, Container, HStack, VStack, Image, Text } from "native-base";
 import * as Linking from 'expo-linking';
 import { trigger } from 'react-native-haptic-feedback'
 
-const GenericCard = ({ item, index, spotifyLogo }) => {
+const GenericCard = ({ deviceTheme, item, index, spotifyLogo }) => {
+  const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
+  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
+  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
   const onPress = () => {
     trigger('impactLight')
     Linking.openURL(item.url)
@@ -12,7 +16,7 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
   return (
     <Pressable onPress={onPress}>
       {({ isPressed }) => (
-        <Container my={1} rounded={'md'} bg={'white'} p={1.5} minWidth={'100%'} style={{
+        <Container my={1} rounded={'md'} bg={itemColor} p={1.5} minWidth={'100%'} style={{
           transform: [{
             scale: isPressed ? 0.98 : 1,
           }]
@@ -26,7 +30,7 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
               borderRadius={2}
               marginRight={2}
             />
-            <Text mr={1} fontWeight='bold' fontSize='lg'>{index + 1}.</Text>
+            <Text mr={1} fontWeight='bold' fontSize='lg' color={textColor}>{index + 1}.</Text>
 
             <VStack flex={1}>
               <Text
@@ -34,10 +38,11 @@ const GenericCard = ({ item, index, spotifyLogo }) => {
                 flexShrink={1} // Allow the text to shrink if necessary
                 fontWeight="black"
                 fontSize="lg"
+                color={textColor}
               >
                 {item.name}
               </Text>
-              <Text fontSize={'sm'}>
+              <Text fontSize={'sm'} color={textColor}>
                 {item.artists}
               </Text>
             </VStack>

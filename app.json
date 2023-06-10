@@ -2,10 +2,10 @@
   "expo": {
     "name": "TuneTidy",
     "slug": "tune-tidy-native",
-    "version": "1.0.1",
+    "version": "1.2",
     "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
     "icon": "./assets/large-logo.png",
-    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -16,7 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "1",
       "supportsTablet": true,
       "bundleIdentifier": "com.tunetidy.native",
       "infoPlist": {
@@ -28,16 +28,6 @@
         "usesNonExemptEncryption": false
       }
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.tunetidy.native"
-    },
-    "web": {
-      "favicon": "./assets/large-logo.png"
-    },
     "extra": {
       "eas": {
         "projectId": "2fe83fd6-d846-4cfa-8c7a-1db0672815ad"
@@ -45,6 +35,9 @@
     },
     "plugins": [
       "react-native-compressor"
-    ]
+    ],
+    "android": {
+      "package": "com.tunetidy.native"
+    }
   }
 }

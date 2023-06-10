@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Text, HStack, Heading, Image, Box, Button, Spacer, TextArea, Center, Spinner } from 'native-base';
+import { Text, HStack, Heading, Image, Box, Button, Spacer, TextArea, Center, Spinner, useColorModeValue } from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { trigger } from 'react-native-haptic-feedback';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { getData, storeData } from '../../../../utils/asyncStorage';
 import { Image as Compressor } from 'react-native-compressor';
+
 
 // OpenAI API
 import { REACT_APP_OPENAI_API_KEY, REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
@@ -17,6 +18,9 @@ const openai = new OpenAIApi(configuration);
 const spotify = new SpotifyWebApi();
 
 export default function CoverImageGenerator({ route, navigation }) {
+  const bgColor = useColorModeValue('white', 'black');
+  const textColor = useColorModeValue('black', 'gray.400');
+  const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
   const selectedPlaylist = route.params.selectedPlaylist;
   const user = route.params.user;
   const [prompt, setPrompt] = useState('');
@@ -161,18 +165,18 @@ export default function CoverImageGenerator({ route, navigation }) {
   return (
     <TouchableWithoutFeedback
       onPress={() => { Keyboard.dismiss(); }}>
-      <Box flex={1} p={6} bgColor='white' borderRadius='lg'>
+      <Box flex={1} p={6} bgColor={bgColor} borderRadius='lg'>
         <HStack alignItems={'center'} space={1}>
           <FontAwesome5 name="magic" size={20} color="#1769ef"/>
-          <Heading size={'lg'}>
+          <Heading size={'lg'} color={textColor}>
             Cover Art Generator
           </Heading>
         </HStack>
         
 
         {/* on blue focus on button */}
-        <Text mt={5} fontSize={'md'} fontWeight={'medium'}>{3-generationLimit} generations left today</Text>
-        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: 'coolGray.100' }} />
+        <Text mt={5} fontSize={'md'} fontWeight={'medium'} color={textColor}>{3-generationLimit} generations left today</Text>
+        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: borderColor }} />
         {/* <Spacer /> */}
         <Button flex={1} mt={3} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1769ef'} _pressed={{
           opacity: 0.5,

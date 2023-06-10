@@ -28,7 +28,8 @@ import { REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
 
 const spotify = new SpotifyWebApi();
 
-function PlaylistEditor({ route, navigation, rootNavigator }) {
+function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
+  
   const [sorter, setSorter] = useState('original_position');
   const [sorterDirection, setSorterDirection] = useState('asc');
   const [loading, setLoading] = useState(false);
@@ -434,12 +435,17 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
     checkViewedInstructions();
   }, []);
 
+  const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
+  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
+  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
+
 
   return (
     <>
-      <LoadingModal isOpen={loading} progress={progress} />
-      <Header text={selectedPlaylist.name} handleBackButtonPress={handleBackButtonPress} />
-      <Flex mt={'90px'} mb={'25px'} mx={'25px'}>
+      <LoadingModal deviceTheme={deviceTheme} isOpen={loading} progress={progress} />
+      <Header deviceTheme={deviceTheme} text={selectedPlaylist.name} handleBackButtonPress={handleBackButtonPress} />
+      <Flex pt={'90px'} pb={'25px'} px={'25px'} bgColor={bgColor}>
         <Animated.View
           style={{
             transform: [{ translateY: headerTranslateY }],
@@ -476,12 +482,12 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
                     <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
                   </HStack>
                 </Button>
-                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={'white'} flex={1} py={'1.5'} px={3} _pressed={{
+                <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={itemColor} flex={1} py={'1.5'} px={3} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
-                    <Icon name="copy" size={20} color="black" />
-                    <Text color={'black'} fontWeight={'medium'}>Copy Playlist</Text>
+                    <Icon name="copy" size={20} color={deviceTheme ? 'gray':'black'} />
+                    <Text color={textColor} fontWeight={'medium'}>Copy Playlist</Text>
                   </HStack>
                 </Button>
               </VStack>
@@ -507,13 +513,19 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
                 paddingRight: 5,
                 borderRadius: 'md',
                 justifyContent: 'center',
+                _text: {
+                  color: textColor,
+                },
               }}
               borderRadius={'md'}
               onOpen={() => trigger('impactLight')}
               onValueChange={handleSorterChange}
               placeholder="Sort by"
               variant='filled'
-              bgColor={'white'}
+              bgColor={itemColor}
+              color={textColor}
+              borderWidth={0}
+              _actionSheetContent={{bgColor: itemColor}}
               fontWeight={'medium'}
               dropdownIcon={<Icon name={iconOptionsLeft[getKeyByValue(sorterOptions, sorter)]} size={20} color={'#5e5e5e'} style={{ marginRight: 10 }} />}
             >
@@ -523,13 +535,14 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
                   leftIcon={<Icon name={iconOptionsLeft[option]} size={20} color={'#5e5e5e'} />}
                   key={index}
                   label={option}
+                  bgColor={itemColor}
                   _text={{fontWeight: 'medium'}}
                   value={sorterOptions[option]}
                 />
               ))}
             </Select>
             {/* Asc/Desc button */}
-            <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={'white'} borderRadius={'md'} _pressed={{
+            <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={itemColor} borderRadius={'md'} _pressed={{
               opacity: 0.5,
             }}>
               <Icon name={iconOptions[getKeyByValue(sorterOptions, sorter)][sorterDirection]} size={20} color={'#5e5e5e'} />
@@ -537,7 +550,7 @@ function PlaylistEditor({ route, navigation, rootNavigator }) {
           </HStack>
           {/* Tracks */}
 
-          <TracksList refreshing={refreshing} setRefreshing={setRefreshing} tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
+          <TracksList deviceTheme={deviceTheme} refreshing={refreshing} setRefreshing={setRefreshing} tracks={tracks} spotifyLogo={spotifyLogo} scrollY={scrollY} />
         </Animated.View>
 
 

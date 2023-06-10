@@ -2,7 +2,7 @@ import { Box } from "native-base";
 import { Animated } from 'react-native';
 import PlaylistTrackCard from '../../../cards/PlaylistTrackCard';
 
-function TracksList({ refreshing, setRefreshing, tracks, spotifyLogo, scrollY }) {
+function TracksList({ deviceTheme, refreshing, setRefreshing, tracks, spotifyLogo, scrollY }) {
   
   return (
     <Animated.FlatList
@@ -18,7 +18,7 @@ function TracksList({ refreshing, setRefreshing, tracks, spotifyLogo, scrollY })
       refreshing={refreshing}
       onRefresh={() => setRefreshing(true)}
       renderItem={({ item, index }) => (
-        <PlaylistTrackCard item={item} index={index} spotifyLogo={spotifyLogo} />
+        <PlaylistTrackCard deviceTheme={deviceTheme} item={item} index={index} spotifyLogo={spotifyLogo} />
       )}
       keyExtractor={(item, index) => (index + item.id + item.date_added + item.name)}
     />
