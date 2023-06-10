@@ -2,7 +2,7 @@
   "expo": {
     "name": "TuneTidy",
     "slug": "tune-tidy-native",
-    "version": "1.2",
+    "version": "1.2.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/large-logo.png",
