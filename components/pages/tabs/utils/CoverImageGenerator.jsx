@@ -197,7 +197,7 @@ export default function CoverImageGenerator({ route, navigation }) {
           <>
             <Button flex={1} mb={5} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleSetCoverPress} p={2} bgColor={'#1DB954'} _pressed={{
               opacity: 0.5,
-            }} isDisabled={loading||generationLimit>=3}>
+            }} isDisabled={loading||generationLimit>=4}>
               <HStack space={2} alignItems="center">
                 <FontAwesome5 name="save" size={20} color="white" />
                 <Text color={'white'} fontWeight={'semibold'}>Set as Playlist Cover</Text>
