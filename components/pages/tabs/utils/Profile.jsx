@@ -10,9 +10,9 @@ import Header from './Header';
 
 export default function Profile({ deviceTheme, user, navigation }) {
   const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
-  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const textColor = deviceTheme === 'dark' ? 'gray.100' : 'black';
   const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
-  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
+  const itemColor = deviceTheme === 'dark' ? '#141414' : 'white';
 
   const handleBackButtonPress = () => {
     navigation.goBack();

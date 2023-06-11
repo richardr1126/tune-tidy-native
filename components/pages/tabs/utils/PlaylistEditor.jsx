@@ -17,7 +17,7 @@ import * as Linking from 'expo-linking';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { trigger } from 'react-native-haptic-feedback';
 
-import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
+import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Green.png';
 import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
@@ -166,11 +166,11 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
       return;
     }
     const id = selectedPlaylist.id;
-    console.log('id: ', id);
+    //console.log('id: ', id);
     spotify.getPlaylist(id).then((data) => {
-      console.log('Fetched playlist');
+      //console.log('Fetched playlist');
       setSelectedPlaylist(data);
-      console.log(data);
+      //console.log(data);
     }).catch((error) => {
       console.log("Error fetching playlist:", error);
       errorFetching();
@@ -179,7 +179,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
     //https://jmperezperez.com/spotify-web-api-js/
     spotify.getPlaylistTracks(id, { limit: 50 })
       .then(async (data) => {
-        console.log('Fetched tracks');
+        //console.log('Fetched tracks');
         let combinedTracks = data.items;
         const totalTracks = data.total;
 
@@ -188,7 +188,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
             try {
               await new Promise((resolve) => setTimeout(resolve, 150));
               const additionalData = await spotify.getPlaylistTracks(id, { limit: 50, offset });
-              console.log('Fetching more tracks...');
+              //console.log('Fetching more tracks...');
               combinedTracks = combinedTracks.concat(additionalData.items);
             } catch (error) {
               console.log("Error fetching more tracks from playlist:", error);
@@ -335,7 +335,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
       name: playlist.name + " - Sorted",
       description: playlist.description + (playlist.description ? ". " : "") + "Sorted by " + getKeyByValue(sorterOptions, sorter) + " - " + sorterDirections[sorterDirection],
     }).then(async (data) => {
-      console.log(data);
+      //console.log(data);
       const newPlaylistId = data.id;
       //only map uris of tracks that have an id
       const trackUris = tracks.filter((track) => track.id).map((track) => track.uri);
@@ -349,9 +349,9 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
 
       //adding tracks to new playlist in chunks of 100
       for (const trackUris of Object.values(trackUriChunks)) {
-        console.log(trackUris);
+        //console.log(trackUris);
         const chunk = await spotify.addTracksToPlaylist(newPlaylistId, trackUris);
-        console.log(chunk);
+        //console.log(chunk);
       }
 
     }).catch((error) => {
@@ -436,9 +436,9 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
   }, []);
 
   const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
-  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const textColor = deviceTheme === 'dark' ? 'gray.100' : 'black';
   const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
-  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
+  const itemColor = deviceTheme === 'dark' ? '#141414' : 'white';
 
 
   return (
@@ -486,7 +486,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center">
-                    <Icon name="copy" size={20} color={deviceTheme ? 'gray':'black'} />
+                    <Icon name="copy" size={20} color={deviceTheme === 'dark' ? 'white' : 'black'} />
                     <Text color={textColor} fontWeight={'medium'}>Copy Playlist</Text>
                   </HStack>
                 </Button>
@@ -523,11 +523,13 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
               placeholder="Sort by"
               variant='filled'
               bgColor={itemColor}
+              borderColor={itemColor}
               color={textColor}
-              borderWidth={0}
               _actionSheetContent={{bgColor: itemColor}}
               fontWeight={'medium'}
-              dropdownIcon={<Icon name={iconOptionsLeft[getKeyByValue(sorterOptions, sorter)]} size={20} color={'#5e5e5e'} style={{ marginRight: 10 }} />}
+              dropdownIcon={<Icon name={iconOptionsLeft[getKeyByValue(sorterOptions, sorter)]} size={20} color={
+                deviceTheme === 'dark' ? 'white' : 'black'
+              } style={{ marginRight: 10 }} />}
             >
               {Object.keys(sorterOptions).map((option, index) => (
                 <Select.Item
@@ -545,7 +547,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
             <Button onPress={toggleSortDirection} variant={'solid'} ml={1} size={'xs'} bgColor={itemColor} borderRadius={'md'} _pressed={{
               opacity: 0.5,
             }}>
-              <Icon name={iconOptions[getKeyByValue(sorterOptions, sorter)][sorterDirection]} size={20} color={'#5e5e5e'} />
+              <Icon name={iconOptions[getKeyByValue(sorterOptions, sorter)][sorterDirection]} size={20} color={deviceTheme === 'dark' ? 'white' : 'black'} />
             </Button>
           </HStack>
           {/* Tracks */}

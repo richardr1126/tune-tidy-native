@@ -3,10 +3,10 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { storeData } from '../../../../utils/asyncStorage';
 
 export default function Instructions({ navigation }) {
-  const bgColor = useColorModeValue('white', 'black');
-  const textColor = useColorModeValue('black', 'gray.400');
+  const bgColor = useColorModeValue('#f2f2f2', 'black');
+  const textColor = useColorModeValue('black', 'gray.100');
   const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
-  const itemColor = useColorModeValue('white', '#1e1e1e');
+  const itemColor = useColorModeValue('white', '#141414');
   const deviceTheme = useColorModeValue('light', 'dark');
 
   const handleGetStartedPressed = async () => {

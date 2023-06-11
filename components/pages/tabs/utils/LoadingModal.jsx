@@ -5,9 +5,9 @@ export default function LoadingModal({ deviceTheme, isOpen, progress }) {
   const [startTime, setStartTime] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState({ minutes: 0, seconds: 0 });
   const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
-  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const textColor = deviceTheme === 'dark' ? 'gray.100' : 'black';
   const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
-  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
+  const itemColor = deviceTheme === 'dark' ? '#141414' : 'white';
 
   useEffect(() => {
     if (progress > 0 && progress < 100) {

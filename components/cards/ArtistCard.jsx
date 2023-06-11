@@ -3,13 +3,13 @@ import { Container, HStack, Text, Avatar, Pressable, Image } from "native-base";
 import * as Linking from 'expo-linking';
 import { trigger } from 'react-native-haptic-feedback'
 
-const spotifyLogo = require("../../assets/Spotify_Icon_CMYK_Black.png");
+const spotifyLogo = require("../../assets/Spotify_Icon_CMYK_Green.png");
 
 const ArtistCard = ({ deviceTheme, item, index }) => {
   const bgColor = deviceTheme === 'dark' ? 'black' : '#f2f2f2';
-  const textColor = deviceTheme === 'dark' ? 'gray.400' : 'black';
+  const textColor = deviceTheme === 'dark' ? 'gray.100' : 'black';
   const borderColor = deviceTheme === 'dark' ? '#1e1e1e' : '#e5e5e5';
-  const itemColor = deviceTheme === 'dark' ? '#1e1e1e' : 'white';
+  const itemColor = deviceTheme === 'dark' ? '#141414' : 'white';
 
   const onPress = () => {
     trigger('impactLight')

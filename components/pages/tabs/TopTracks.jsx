@@ -1,16 +1,16 @@
 import { useState, memo } from 'react';
-import { Select, Heading, Center, Spinner, VStack, FlatList, Box, HStack, useColorModeValue } from "native-base";
+import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { trigger } from 'react-native-haptic-feedback';
 
-const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Black.png');
+const spotifyLogo = require('../../../assets/Spotify_Icon_CMYK_Green.png');
 
 function TopTracks({ topTracks }) {
   const bgColor = useColorModeValue('#f2f2f2', 'black');
-  const textColor = useColorModeValue('black', 'gray.400');
+  const textColor = useColorModeValue('black', 'gray.100');
   const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
-  const itemColor = useColorModeValue('white', '#1e1e1e');
+  const itemColor = useColorModeValue('white', '#141414');
   const deviceTheme = useColorModeValue('light', 'dark');
   const [timeRange, setTimeRange] = useState("medium_term");
   const timeRanges = [
@@ -27,15 +27,17 @@ function TopTracks({ topTracks }) {
           minWidth={135}
           selectedValue={timeRange}
           fontWeight={'medium'}
-          color={'#5e5e5e'}
+          color={textColor}
           accessibilityLabel="Choose Time Range"
           placeholder="Choose Time Range"
           onValueChange={setTimeRange}
           variant='filled'
           onOpen={() => trigger('impactLight')}
           bgColor={itemColor}
-          borderColor={borderColor}
-          dropdownIcon={<Icon name="calendar" size={20} color={'#5e5e5e'} style={{ marginRight: 5 }} />}
+          borderColor={itemColor}
+          dropdownIcon={<Icon name="calendar" size={20} color={
+            deviceTheme === 'light' ? 'black' : 'white'
+          } style={{ marginRight: 5 }} />}
           _actionSheetContent={{ bgColor: itemColor }}
           _item={{
             _text: {
@@ -65,7 +67,7 @@ function TopTracks({ topTracks }) {
 
         ) : (
           <Center m={20}>
-            <Spinner accessibilityLabel="Loading..." size={'sm'} color={'grey'} />
+            <Text color={textColor}>No top albums for this time period found.</Text>
           </Center>
         )
       }

@@ -19,7 +19,7 @@ const spotify = new SpotifyWebApi();
 
 export default function CoverImageGenerator({ route, navigation }) {
   const bgColor = useColorModeValue('white', 'black');
-  const textColor = useColorModeValue('black', 'gray.400');
+  const textColor = useColorModeValue('black', 'gray.100');
   const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
   const selectedPlaylist = route.params.selectedPlaylist;
   const user = route.params.user;
