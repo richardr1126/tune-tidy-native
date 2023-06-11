@@ -18,6 +18,7 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import { trigger } from 'react-native-haptic-feedback';
 
 import spotifyLogo from '../../../../assets/Spotify_Icon_CMYK_Green.png';
+import spotifyBlackLogo from '../../../../assets/Spotify_Icon_CMYK_Black.png';
 import TracksList from './TracksList';
 import { Sorters } from '../../../../utils/Sorter';
 import Header from './Header';
@@ -462,7 +463,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center" flex={1}>
-                    <Image source={spotifyLogo} alt="Spotify Logo" boxSize={'25px'} />
+                    <Image source={spotifyBlackLogo} alt="Spotify Logo" boxSize={'25px'} />
                     <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
                   </HStack>
                 </Button>

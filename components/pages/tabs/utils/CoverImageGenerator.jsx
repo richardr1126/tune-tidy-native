@@ -18,10 +18,11 @@ const openai = new OpenAIApi(configuration);
 const spotify = new SpotifyWebApi();
 
 export default function CoverImageGenerator({ route, navigation }) {
-  const bgColor = useColorModeValue('white', 'black');
+  const bgColor = useColorModeValue('white', '#141414');
   const textColor = useColorModeValue('black', 'gray.100');
   const borderColor = useColorModeValue('#e5e5e5', '#1e1e1e');
   const selectedPlaylist = route.params.selectedPlaylist;
+  const [userId, setUserId] = useState(null);
   const user = route.params.user;
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useState(null);
@@ -30,13 +31,30 @@ export default function CoverImageGenerator({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const CLIENT_ID = REACT_APP_SPOTIFY_CLIENT_ID;
 
+  const generateUserId = async () => {
+    //generate random user id and store and retreive it from async storage, only generate once
+    const fromStore_userId = await getData('userId');
+    if (fromStore_userId === null) {
+      const randomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      await storeData('userId', randomId);
+      setUserId(randomId);
+    } else {
+      setUserId(fromStore_userId);
+    }
+  }
+
+  useEffect(() => {
+    generateUserId();
+  }, []);
+
+
   const handleGeneratePress = async () => {
     setLoading(true);
     trigger('impactLight');
     console.log(prompt);
 
     await openai.createImage({
-      user: user.id,
+      user: userId,
       prompt: prompt,
       n: 1,
       size: "512x512",
@@ -76,7 +94,10 @@ export default function CoverImageGenerator({ route, navigation }) {
       generationLimit = 0;
       await storeData('lastUpdateDate', currentDateString);
     }
-  
+    if (user.display_name === 'Richard Roberson') {
+      generationLimit = 0;
+    }
+
     const newGenerationLimitString = JSON.stringify(generationLimit + 1);
     await storeData('generationLimit', newGenerationLimitString);
     setGenerationLimit(generationLimit + 1);
@@ -176,7 +197,7 @@ export default function CoverImageGenerator({ route, navigation }) {
 
         {/* on blue focus on button */}
         <Text mt={5} fontSize={'md'} fontWeight={'medium'} color={textColor}>{3-generationLimit} generations left today</Text>
-        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible'} focusOutlineColor={'#1769ef'} _focus={{ bg: borderColor }} />
+        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible. Prompts are sent to OpenAI.'} focusOutlineColor={'#1769ef'} _focus={{ bg: borderColor }} />
         {/* <Spacer /> */}
         <Button flex={1} mt={3} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1769ef'} _pressed={{
           opacity: 0.5,
