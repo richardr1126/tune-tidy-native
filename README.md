@@ -33,11 +33,7 @@
 - [⚙️ Features](#-features)
 - [📂 Project Structure](#project-structure)
 - [🧩 Modules](#modules)
-- [🚀 Getting Started](#-getting-started)
-- [🗺 Roadmap](#-roadmap)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [👏 Acknowledgments](#-acknowledgments)
 
 ---
 
@@ -129,54 +125,6 @@ The project is a music app built with React Native that uses the Spotify Web API
 
 </details>
 
----
-
-## 🚀 Getting Started
-
-### ✔️ Prerequisites
-
-Before you begin, ensure that you have the following prerequisites installed:
-> - `ℹ️ Requirement 1`
-> - `ℹ️ Requirement 2`
-> - `ℹ️ ...`
-
-### 📦 Installation
-
-1. Clone the tune-tidy-native repository:
-```sh
-git clone https://github.com/richardr1126/tune-tidy-native
-```
-
-2. Change to the project directory:
-```sh
-cd tune-tidy-native
-```
-
-3. Install the dependencies:
-```sh
-npm install
-```
-
-### 🎮 Using tune-tidy-native
-
-```sh
-node app.js
-```
-
-### 🧪 Running Tests
-```sh
-npm test
-```
-
----
-
-
-## 🗺 Roadmap
-
-> - [X] `ℹ️  Task 1: Implement X`
-> - [ ] `ℹ️  Task 2: Refactor Y`
-> - [ ] `ℹ️ ...`
-
 
 ---
 
@@ -201,16 +149,5 @@ git push origin new-feature-branch
 7. Create a new pull request to the original project repository. In the pull request, describe the changes you've made and why they're necessary.
 The project maintainers will review your changes and provide feedback or merge them into the main branch.
 
----
-
-## 📄 License
-
-This project is licensed under the `ℹ️  INSERT-LICENSE-TYPE` License. See the [LICENSE](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository) file for additional info.
-
----
-
-## 👏 Acknowledgments
-
-> - `ℹ️  List any resources, contributors, inspiration, etc.`
 
 ---
