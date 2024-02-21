@@ -10,12 +10,13 @@ import { Image as Compressor } from 'react-native-compressor';
 
 // OpenAI API
 import { REACT_APP_OPENAI_API_KEY, REACT_APP_SPOTIFY_CLIENT_ID } from '@env';
-const { Configuration, OpenAIApi } = require("openai");
-const configuration = new Configuration({
+const spotify = new SpotifyWebApi();
+
+import OpenAI from "openai";
+
+const openai = new OpenAI({
   apiKey: REACT_APP_OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
-const spotify = new SpotifyWebApi();
 
 export default function CoverImageGenerator({ route, navigation }) {
   const bgColor = useColorModeValue('white', '#141414');
@@ -53,14 +54,15 @@ export default function CoverImageGenerator({ route, navigation }) {
     trigger('impactLight');
     console.log(prompt);
 
-    await openai.createImage({
+    await openai.images.generate({
       user: userId,
       prompt: prompt,
       n: 1,
-      size: "512x512",
+      size: "1024x1024",
       response_format: "b64_json"
     }).then(async (response) => {
-      const base64Image = response.data.data[0].b64_json;
+      console.log(response);
+      const base64Image = response.data[0].b64_json;
       const compressedImage = await Compressor.compress(base64Image, {
         compressionMethod: 'manual',
         quality: 0.2,
@@ -81,6 +83,7 @@ export default function CoverImageGenerator({ route, navigation }) {
 
     }).catch((err) => {
       console.log(err);
+      setLoading(false);
     });
   }
 
@@ -197,7 +200,7 @@ export default function CoverImageGenerator({ route, navigation }) {
 
         {/* on blue focus on button */}
         <Text mt={5} fontSize={'md'} fontWeight={'medium'} color={textColor}>{3-generationLimit} generations left today</Text>
-        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible. Prompts are sent to OpenAI.'} focusOutlineColor={'#1769ef'} _focus={{ bg: borderColor }} />
+        <TextArea value={prompt} onChangeText={setPrompt} variant={'filled'} mt={3} size={'lg'} placeholder={'Describe your new playlist cover, with as much detail as possible. Powered by OpenAI.'} focusOutlineColor={'#1769ef'} _focus={{ bg: borderColor }} />
         {/* <Spacer /> */}
         <Button flex={1} mt={3} maxHeight={'40px'} minW={'100%'} borderRadius={'lg'} onPress={handleGeneratePress} p={2} bgColor={'#1769ef'} _pressed={{
           opacity: 0.5,

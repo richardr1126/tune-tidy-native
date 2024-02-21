@@ -146,12 +146,12 @@ export default function Main({ navigation }) {
           id: 'spotifySynced',
           title: "Synced with Spotify",
           placement: 'top',
-          duration: 300,
+          duration: 1000,
         });
       }
-      // setTimeout(() => {
-      //   toast.close('spotifySynced');
-      // }, 5000);
+      setTimeout(() => {
+        toast.close('spotifySynced');
+      }, 5000);
 
     } catch (error) {
       console.log("Error fetching data:", error);
@@ -192,7 +192,6 @@ export default function Main({ navigation }) {
         tabBarStyle: { backgroundColor: bgColor, borderTopWidth: 1, borderColor: borderColor, elevation: 1, shadowOpacity: 1, paddingTop: 0, paddingTop: 0, paddingBottom: 9 },
         headerShown: false,
         swipeEnabled: true,
-        lazy: true,
         tabBarIconStyle: { justifyContent: 'center', alignItems: 'center' },
         tabBarIndicatorStyle: { backgroundColor: '#1DB954' },
         tabBarLabelStyle: { fontSize: 13, fontWeight: '700' },

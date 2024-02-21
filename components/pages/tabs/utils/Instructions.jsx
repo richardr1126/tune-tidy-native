@@ -19,20 +19,20 @@ export default function Instructions({ navigation }) {
 
       <Heading size='lg' color={textColor}>Welcome to the Playlist Sorter!</Heading>
       <Text fontSize={'md'} mt={3} color={textColor}>
-        Here you can sort your playlist by many fun criteria, such as danceability, release date, or energy. Then you can save them as new playlists or overwrite the original.
+        Here you can sort your playlist by many fun criteria, such as danceability, release date, or energy.
       </Text>
 
       <ScrollView mt={5} flex={1} minH={'45%'}>
         <HStack space={3} width={'90%'} mb={2}>
           <FontAwesome5 name='copy' style={{paddingTop: 4}} size={24} color={deviceTheme === 'dark' ? 'gray' : 'black'} />
           <Text fontSize={'sm'} color={textColor}>
-            Creat Copy: creates a copy of the sorted playlist and adds it to your Spotify account. Refresh the page after copying to view the new playlist.
+            Duplicate: creates a copy of the sorted playlist and adds it to your Spotify account.
           </Text>
         </HStack>
         <HStack space={3}width={'90%'} mb={2}>
-          <FontAwesome5 name='edit' style={{paddingTop: 4}} size={24} color={'red'} />
+          <FontAwesome5 name='save' style={{paddingTop: 4}} size={24} color={'red'} />
           <Text fontSize={'sm'} color={textColor}>
-            Override Playlist: overwrites the original playlist with the sorted version. You will lose any manually set custom order you have set for the playlist, however you can always revert back to the Date Added as your sort order.
+            Save Playlist: overwrites the original playlist with the sorted version.
           </Text>
         </HStack>
         <HStack space={3} width={'90%'} mb={2}>

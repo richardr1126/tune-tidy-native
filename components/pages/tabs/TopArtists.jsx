@@ -1,5 +1,5 @@
 import { useState, memo } from 'react';
-import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue } from "native-base";
+import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue, Text, Spinner } from "native-base";
 import ArtistCard from '../../cards/ArtistCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { trigger } from 'react-native-haptic-feedback';
@@ -67,7 +67,7 @@ function TopArtists({ topArtists }) {
 
         ) : (
           <Center m={20}>
-            <Text color={textColor}>No top artists for this time period found.</Text>
+            <Spinner color={textColor} />
           </Center>
         )
       }

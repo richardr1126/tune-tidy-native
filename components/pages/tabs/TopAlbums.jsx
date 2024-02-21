@@ -1,5 +1,5 @@
 import { useMemo, useState, memo } from 'react';
-import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue } from "native-base";
+import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue, Text, Spinner } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { trigger } from 'react-native-haptic-feedback';
@@ -21,6 +21,8 @@ function TopAlbums({ topTracks }) {
 
   // Grouping tracks by albums and Sorting albums with totalTracks > 5 by the number of tracks in descending order
   const sortedTopAlbums = useMemo(() => {
+    if (!topTracks[timeRange]?.items) return null;
+
     const topAlbums = topTracks[timeRange]?.items.reduce((acc, item, index) => {
       if (!acc[item.albumId]) {
         acc[item.albumId] = {
@@ -97,7 +99,8 @@ function TopAlbums({ topTracks }) {
 
         ) : (
           <Center m={20}>
-            <Text color={textColor}>No top albums for this time period found. Only full-length albums with 6 or more songs are shown.</Text>
+            <Spinner color={textColor} />
+            <Text mt={10} color={textColor}>You may not have enough data for this time range</Text>
           </Center>
         )
       }

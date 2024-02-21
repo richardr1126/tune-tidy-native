@@ -458,13 +458,13 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
               <Container>
                 <Image borderRadius={'sm'} source={{ uri: selectedPlaylist.images[0].url }} alt="playlist cover" size={160} />
               </Container>
-              <VStack space={1.5} ml={1.5}>
+              <VStack space={1.5} ml={1.5} minWidth={150}>
                 <Button borderRadius={'lg'} onPress={handleSpotifyButtonPress} flex={1} py={'1.5'} px={3} bgColor={'#1DB954'} _pressed={{
                   opacity: 0.5,
                 }}>
                   <HStack space={1} alignItems="center" flex={1}>
                     <Image source={spotifyBlackLogo} alt="Spotify Logo" boxSize={'25px'} />
-                    <Text color={'black'} fontWeight={'medium'}>View on Spotify</Text>
+                    <Text color={'black'} fontWeight={'medium'}>Open</Text>
                   </HStack>
                 </Button>
                 <Button borderRadius={'lg'} onPress={handlePlaylistCoverPress} bgColor={'#1769ef'} flex={1} py={'1.5'} px={3} _pressed={{
@@ -472,15 +472,7 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
                 }}>
                   <HStack space={1} alignItems="center">
                     <Icon name="magic" size={20} color="white" />
-                    <Text color={'white'} fontWeight={'medium'}>Create Cover Art</Text>
-                  </HStack>
-                </Button>
-                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} disabled={selectedPlaylist.owner.id !== user.id ? true:false} flex={1} py={'1.5'} px={3} bgColor={'#e53e3e'} _pressed={{
-                  opacity: 0.5,
-                }}>
-                  <HStack space={1} alignItems="center">
-                    <Icon name="edit" size={20} color="white" />
-                    <Text color={'white'} fontWeight={'medium'}>Override Playlist</Text>
+                    <Text color={'white'} fontWeight={'medium'}>Cover Art</Text>
                   </HStack>
                 </Button>
                 <Button borderRadius={'lg'} onPress={handleCopyButtonPress} bgColor={itemColor} flex={1} py={'1.5'} px={3} _pressed={{
@@ -488,7 +480,15 @@ function PlaylistEditor({ deviceTheme, route, navigation, rootNavigator }) {
                 }}>
                   <HStack space={1} alignItems="center">
                     <Icon name="copy" size={20} color={deviceTheme === 'dark' ? 'white' : 'black'} />
-                    <Text color={textColor} fontWeight={'medium'}>Copy Playlist</Text>
+                    <Text color={textColor} fontWeight={'medium'}>Duplicate</Text>
+                  </HStack>
+                </Button>
+                <Button borderRadius={'lg'} onPress={handleOverrideButtonPress} disabled={selectedPlaylist.owner.id !== user.id ? true:false} flex={1} py={'1.5'} px={3} bgColor={'#e53e3e'} _pressed={{
+                  opacity: 0.5,
+                }}>
+                  <HStack space={1} alignItems="center">
+                    <Icon name="save" size={20} color="white" />
+                    <Text color={'white'} fontWeight={'medium'}>Save</Text>
                   </HStack>
                 </Button>
               </VStack>

@@ -1,5 +1,5 @@
 import { useState, memo } from 'react';
-import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue } from "native-base";
+import { Select, Heading, Center, VStack, FlatList, Box, HStack, useColorModeValue, Text, Spinner } from "native-base";
 import GenericCard from '../../cards/GenericCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { trigger } from 'react-native-haptic-feedback';
@@ -51,7 +51,7 @@ function TopTracks({ topTracks }) {
         </Select>
       </HStack>
 
-      {topTracks[timeRange]
+      {topTracks[timeRange] !== null
         ? (
           <FlatList
             mt={2}
@@ -64,10 +64,9 @@ function TopTracks({ topTracks }) {
             )}
             keyExtractor={item => item.id}
           />
-
         ) : (
           <Center m={20}>
-            <Text color={textColor}>No top albums for this time period found.</Text>
+            <Spinner color={textColor} />
           </Center>
         )
       }
