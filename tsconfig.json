@@ -1,0 +1,11 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "app/(tabs)/(playlist)/index.jsx", "components/User.jsx", "app/landing.jsx", "app/(tabs)/(stats)/artists.jsx", "app/(tabs)/(stats)/albums.jsx", "app/(tabs)/(stats)/tracks.jsx", "lib/useColorScheme.jsx"]
+}

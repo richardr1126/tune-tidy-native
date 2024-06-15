@@ -1,0 +1,8 @@
+{
+  "platforms": "native-only",
+  "aliases": {
+    "components": "~/components",
+    "lib": "~/lib",
+    "assets": "~/assets/images"
+  }
+}
