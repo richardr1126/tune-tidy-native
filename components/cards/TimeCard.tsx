@@ -34,8 +34,8 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
                 Here you can view your top Spotify stats in 3 different time ranges.
               </P>
               <View className='gap-0.5'>
-                <P className='text-left'>1 Month (last month)</P>
-                <P className='text-left'>6 Months (last 6 months)</P>
+                <P className='text-left'>Last Month</P>
+                <P className='text-left'>6 Months</P>
                 <P className='text-left'>Long Term (~2 years)</P>
               </View>
             </View>
@@ -52,7 +52,7 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
             onPress={() => onPress('short_term')}
             className={cn('flex-1 rounded-full', padding, isActive('short_term'))}
           >
-            <Text className={cn('font-semibold text-center', textColor("short_term"))}>1 Month</Text>
+            <Text className={cn('font-semibold text-center', textColor("short_term"))}>Last Month</Text>
           </Pressable>
 
           <Pressable

@@ -2,9 +2,11 @@ import { useLayoutEffect, useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 import { getData } from '~/utils/asyncStorage';
 import { addEventListener, removeEventListener } from '~/utils/eventEmitter';
+import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 
 const useCustomColorScheme = () => {
   const systemColorScheme = useRNColorScheme();
+  const { colorScheme: nativewindColorScheme, setColorScheme: setNativeWindColorScheme } = useNativewindColorScheme();
   const [colorScheme, setColorScheme] = useState('uninitialized'); // Use 'uninitialized' or null initially
 
   useLayoutEffect(() => {
@@ -13,6 +15,7 @@ const useCustomColorScheme = () => {
     const updateScheme = async () => {
       const storedColorScheme = await getData('colorSchemePreference');
       if (isMounted) {
+
         setColorScheme(storedColorScheme === 'alwaysDark' ? 'dark' : systemColorScheme);
       }
     };
@@ -22,6 +25,7 @@ const useCustomColorScheme = () => {
     // Listen for changes
     const unsubscribe = addEventListener('colorSchemeChanged', (newScheme) => {
       if (isMounted) {
+
         setColorScheme(newScheme === 'alwaysDark' ? 'dark' : systemColorScheme);
       }
     });

@@ -41,12 +41,40 @@ export {
 } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
-//SplashScreen.preventAutoHideAsync();
-
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorMode = useCustomColorScheme();
-  const isDarkColorScheme = colorMode === 'dark';
+  const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
+  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    (async () => {
+      const theme = await AsyncStorage.getItem('theme');
+      if (Platform.OS === 'web') {
+        // Adds the background color to the html element to prevent white background on overscroll.
+        document.documentElement.classList.add('bg-background');
+      }
+      if (!theme) {
+        AsyncStorage.setItem('theme', colorScheme);
+        setIsColorSchemeLoaded(true);
+        return;
+      }
+      const colorTheme = theme === 'dark' ? 'dark' : 'light';
+      if (colorTheme !== colorScheme) {
+        setColorScheme(colorTheme);
+
+        setIsColorSchemeLoaded(true);
+        return;
+      }
+      setIsColorSchemeLoaded(true);
+    })().finally(() => {
+      SplashScreen.hideAsync();
+    });
+  }, []);
+
+  if (!isColorSchemeLoaded) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

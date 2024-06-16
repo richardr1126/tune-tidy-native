@@ -50,28 +50,43 @@ export const StatsProvider = ({ children }) => {
     let allTracks = [];
     let pageParam = 0;
     let hasMore = true;
-
+  
     await checkToken();
-
+  
+    // Fetch all tracks in one loop
     while (hasMore) {
       const response = await spotify.getMyTopTracks({ time_range: timeRange, limit: 50, offset: pageParam });
       allTracks = allTracks.concat(response.items);
       pageParam += 50;
       hasMore = response.items.length === 50;
     }
-
+  
+    // Create a map to track album scores and details
     const albumMap = new Map();
-
-    allTracks.forEach((track) => {
+  
+    // Populate the map with album data and calculate scores
+    allTracks.forEach((track, index) => {
       const album = track.album;
-      if (albumMap.has(album.id)) {
-        albumMap.get(album.id).count += 1;
+      if (!albumMap.has(album.id)) {
+        albumMap.set(album.id, {
+          ...album,
+          tracks: [track],
+          score: 0,
+        });
       } else {
-        albumMap.set(album.id, { ...album, count: 1 });
+        albumMap.get(album.id).tracks.push(track);
       }
+  
+      // Calculate score based on track position and apply a linear penalty based on album length
+      const baseScore = (allTracks.length - index) / album.total_tracks;
+      const penalty = Math.max(0, (7 - album.total_tracks) * 0.1); // Linear penalty decreases with more tracks
+      albumMap.get(album.id).score += baseScore * (1 - penalty);
     });
-
-    return Array.from(albumMap.values()).sort((a, b) => b.count - a.count);
+  
+    // Convert the map to an array, filter, and sort
+    return Array.from(albumMap.values())
+      .filter(album => album.total_tracks >= 4)
+      .sort((a, b) => b.score - a.score);
   };
 
   const {
