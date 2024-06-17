@@ -49,20 +49,18 @@ export default function RootLayout() {
 
   React.useEffect(() => {
     (async () => {
-      const theme = await AsyncStorage.getItem('theme');
+      const userThemePreference = await AsyncStorage.getItem('userThemePreference');
       if (Platform.OS === 'web') {
         // Adds the background color to the html element to prevent white background on overscroll.
         document.documentElement.classList.add('bg-background');
       }
-      if (!theme) {
-        AsyncStorage.setItem('theme', colorScheme);
+      if (!userThemePreference) {
+        setColorScheme('system');
         setIsColorSchemeLoaded(true);
         return;
       }
-      const colorTheme = theme === 'dark' ? 'dark' : 'light';
-      if (colorTheme !== colorScheme) {
-        setColorScheme(colorTheme);
-
+      if (userThemePreference !== colorScheme) {
+        setColorScheme(userThemePreference as 'light' | 'dark' | 'system');
         setIsColorSchemeLoaded(true);
         return;
       }

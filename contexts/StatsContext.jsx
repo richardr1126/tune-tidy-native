@@ -1,35 +1,16 @@
 import React, { createContext, useContext, useState } from 'react';
-import SpotifyWebApi from 'spotify-web-api-js';
-import { getData } from '~/utils/asyncStorage';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useUser } from '~/contexts/UserContext';
 
-const spotify = new SpotifyWebApi();
 const StatsContext = createContext();
 
 export const useStats = () => useContext(StatsContext);
 
 export const StatsProvider = ({ children }) => {
-  const queryClient = useQueryClient();
   const [timeRange, setTimeRange] = useState('medium_term');
-
-  const checkToken = async () => {
-    const storedToken = await getData('token2');
-    if (!storedToken) {
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
-      return null;
-    }
-
-    try {
-      spotify.setAccessToken(storedToken);
-    } catch (error) {
-      console.log('Error setting access token:', error);
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
-      return null;
-    }
-  };
+  const { spotify, accessToken, isTokenRefreshing } = useUser();
 
   const fetchArtists = async ({ pageParam = 0 }) => {
-    await checkToken();
     const response = await spotify.getMyTopArtists({ time_range: timeRange, limit: 50, offset: pageParam });
     return {
       items: response.items,
@@ -38,7 +19,6 @@ export const StatsProvider = ({ children }) => {
   };
 
   const fetchTracks = async ({ pageParam = 0 }) => {
-    await checkToken();
     const response = await spotify.getMyTopTracks({ time_range: timeRange, limit: 50, offset: pageParam });
     return {
       items: response.items,
@@ -50,8 +30,6 @@ export const StatsProvider = ({ children }) => {
     let allTracks = [];
     let pageParam = 0;
     let hasMore = true;
-  
-    await checkToken();
   
     // Fetch all tracks in one loop
     while (hasMore) {
@@ -103,6 +81,7 @@ export const StatsProvider = ({ children }) => {
     staleTime: 3600000, // 1 hour
     cacheTime: 3600000, // 1 hour
     refetchInterval: 3600000, // 1 hour
+    enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
   const {
@@ -119,6 +98,7 @@ export const StatsProvider = ({ children }) => {
     staleTime: 3600000, // 1 hour
     cacheTime: 3600000, // 1 hour
     refetchInterval: 3600000, // 1 hour,
+    enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
   const {
@@ -132,6 +112,7 @@ export const StatsProvider = ({ children }) => {
     staleTime: 3600000, // 1 hour
     cacheTime: 3600000, // 1 hour
     refetchInterval: 3600000, // 1 hour
+    enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
   const artists = artistsData?.pages.flatMap((page) => page.items) || [];

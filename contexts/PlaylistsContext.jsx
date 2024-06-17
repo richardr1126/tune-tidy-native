@@ -1,34 +1,17 @@
 import React, { createContext, useContext } from 'react';
-import SpotifyWebApi from 'spotify-web-api-js';
-import { getData } from '~/utils/asyncStorage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useUser } from '~/contexts/UserContext';
 
-const spotify = new SpotifyWebApi();
 const PlaylistContext = createContext();
 
 export const usePlaylists = () => useContext(PlaylistContext);
 
 export const PlaylistsProvider = ({ children }) => {
   const queryClient = useQueryClient();
+  const { spotify, accessToken, isTokenRefreshing } = useUser();
 
   const fetchPlaylists = async () => {
     const playlists = [];
-  
-    const storedToken = await getData('token2');
-    if (!storedToken) {
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
-      return [];
-    }
-
-    try {
-      spotify.setAccessToken(storedToken);
-    } catch (error) {
-      console.log('Error setting access token:', error);
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
-      return [];
-    }
-  
-    
     let limit = 50;
     let offset = 0;
     let response = await spotify.getUserPlaylists({ limit, offset });
@@ -39,6 +22,8 @@ export const PlaylistsProvider = ({ children }) => {
       offset += limit;
       response = await spotify.getUserPlaylists({ limit, offset });
     }
+
+    console.log(playlists.length, 'playlists fetched')
   
     return playlists;
   };
@@ -49,6 +34,7 @@ export const PlaylistsProvider = ({ children }) => {
     staleTime: 3600000, // 1 hour
     cacheTime: 3600000, // 1 hour
     refetchInterval: 3600000, // 1 hour
+    enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
   return (

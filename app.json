@@ -16,14 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.tunetidy.native",
-      "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
-      },
       "config": {
         "usesNonExemptEncryption": false
       },
