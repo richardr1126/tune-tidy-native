@@ -10,11 +10,13 @@ import * as Haptics from 'expo-haptics';
 import { blurhash } from '~/lib/utils';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 
 const spotify = new SpotifyWebApi();
 
 function PlaylistCard({ playlist }: any) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const scale = useRef(new Animated.Value(1)).current;
   const swipeRef = useRef<Swipeable>(null);
 
@@ -66,6 +68,8 @@ function PlaylistCard({ playlist }: any) {
   const handlePress = () => {
     Haptics.selectionAsync();
     console.log('Pressed playlist:', playlist.name);
+    
+    router.push({ pathname: '(playlist)/[playlist]', params: { playlist: playlist.id } });
   };
 
   const onTrashPress = () => {

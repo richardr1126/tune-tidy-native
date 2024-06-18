@@ -31,9 +31,9 @@ export const PlaylistsProvider = ({ children }) => {
   const { data: playlists, isPending, isRefetching, isError } = useQuery({
     queryKey: ['playlists'],
     queryFn: fetchPlaylists,
-    staleTime: 3600000, // 1 hour
-    cacheTime: 3600000, // 1 hour
-    refetchInterval: 3600000, // 1 hour
+    staleTime: Infinity, // 1 hour
+    cacheTime: Infinity, // 1 hour
+    refetchInterval: Infinity, // 1 hour
     enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 

@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "~51.0.14",
+    "expo-haptics": "~13.0.1",
     "expo-image": "~1.12.12",
     "expo-linking": "~6.3.1",
     "expo-navigation-bar": "~3.0.4",
@@ -35,6 +36,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.74.2",
     "react-native-compressor": "^1.8.24",
+    "react-native-gesture-handler": "~2.16.1",
     "react-native-pager-view": "6.3.0",
     "react-native-paper": "^5.12.3",
     "react-native-pkce-challenge": "^5.3.1",
@@ -49,9 +51,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.4.7",
-    "expo-haptics": "~13.0.1",
-    "react-native-gesture-handler": "~2.16.1"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

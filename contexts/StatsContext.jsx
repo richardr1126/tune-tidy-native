@@ -11,18 +11,18 @@ export const StatsProvider = ({ children }) => {
   const { spotify, accessToken, isTokenRefreshing } = useUser();
 
   const fetchArtists = async ({ pageParam = 0 }) => {
-    const response = await spotify.getMyTopArtists({ time_range: timeRange, limit: 50, offset: pageParam });
+    const response = await spotify.getMyTopArtists({ time_range: timeRange, limit: 25, offset: pageParam });
     return {
       items: response.items,
-      nextPage: response.items.length ? pageParam + 50 : null,
+      nextPage: response.items.length ? pageParam + 25 : null,
     };
   };
 
   const fetchTracks = async ({ pageParam = 0 }) => {
-    const response = await spotify.getMyTopTracks({ time_range: timeRange, limit: 50, offset: pageParam });
+    const response = await spotify.getMyTopTracks({ time_range: timeRange, limit: 25, offset: pageParam });
     return {
       items: response.items,
-      nextPage: response.items.length ? pageParam + 50 : null,
+      nextPage: response.items.length ? pageParam + 25 : null,
     };
   };
 
@@ -78,9 +78,9 @@ export const StatsProvider = ({ children }) => {
     queryKey: ['artists', timeRange],
     queryFn: fetchArtists,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 3600000, // 1 hour
-    cacheTime: 3600000, // 1 hour
-    refetchInterval: 3600000, // 1 hour
+    staleTime: Infinity, // 1 hour
+    cacheTime: Infinity, // 1 hour
+    refetchInterval: Infinity, // 1 hour
     enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
@@ -95,9 +95,9 @@ export const StatsProvider = ({ children }) => {
     queryKey: ['tracks', timeRange],
     queryFn: fetchTracks,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 3600000, // 1 hour
-    cacheTime: 3600000, // 1 hour
-    refetchInterval: 3600000, // 1 hour,
+    staleTime: Infinity, // 1 hour
+    cacheTime: Infinity, // 1 hour
+    refetchInterval: Infinity, // 1 hour,
     enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 
@@ -109,9 +109,9 @@ export const StatsProvider = ({ children }) => {
   } = useQuery({
     queryKey: ['albums', timeRange],
     queryFn: fetchTopAlbums,
-    staleTime: 3600000, // 1 hour
-    cacheTime: 3600000, // 1 hour
-    refetchInterval: 3600000, // 1 hour
+    staleTime: Infinity, // 1 hour
+    cacheTime: Infinity, // 1 hour
+    refetchInterval: Infinity, // 1 hour
     enabled: (!!accessToken) && (!isTokenRefreshing),
   });
 

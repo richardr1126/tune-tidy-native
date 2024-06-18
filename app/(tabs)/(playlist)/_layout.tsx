@@ -8,8 +8,18 @@ export default function PlaylistLayout() {
         <Stack.Screen
           name='index'
           options={{
-            title: 'Sorter',
+            title: 'Select',
             headerShown: false,
+            //headerRight: () => <ThemeToggle />,
+          }}
+        />
+        <Stack.Screen
+          name='[playlist]'
+          options={{
+            title: ' ',
+            headerShadowVisible: false,
+            headerTransparent: true,
+            headerBlurEffect: 'systemThinMaterial',
             //headerRight: () => <ThemeToggle />,
           }}
         />

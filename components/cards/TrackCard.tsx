@@ -26,7 +26,7 @@ function TrackCard({ index, track }: any) {
 
   const handlePress = () => {
     Haptics.selectionAsync();
-    Linking.openURL(track.external_urls.spotify);
+    if (track.external_urls.spotify) Linking.openURL(track.external_urls.spotify);
   }
 
   return (
@@ -34,12 +34,12 @@ function TrackCard({ index, track }: any) {
       <Animated.View style={{ transform: [{ scale }] }}>
         <Card className="mx-2 bg-card">
           <CardContent className="flex-row p-2 items-center gap-2 flex-wrap">
-            <Image
+            {track?.id && <Image
               source={require('~/assets/images/spotify-icon.png')}
               style={{ width: 14, height: 14, position: 'absolute', top: 4, right: 4 }}
-            />
+            />}
             <Image
-              source={track.album.images[1].url}
+              source={track.album?.images[2]?.url || track.album?.images[1]?.url || track.album?.images[0]?.url}
               style={{ width: 45, height: 45, borderRadius: 6 }}
               placeholder={{ blurhash }}
               contentFit="cover"
@@ -48,7 +48,7 @@ function TrackCard({ index, track }: any) {
 
             {/* VStack */}
             <View className="flex-1 flex-row gap-1">
-              <H1 className="text-md">{index}.</H1>
+              {index && <H1 className="text-md">{index}.</H1>}
               <View className="flex-1 flex-col">
                 <H1 className="text-md">{track.name}</H1>
                 <P>{track.artists[0].name}</P>
