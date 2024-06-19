@@ -30,7 +30,8 @@ const fetchAudioFeaturesForTracks = async (spotify, trackIds) => {
   return trackFeatures;
 };
 
-const sortTracksByFeature = (tracks, feature) => {
+const sortTracksByFeature = (tracks, sortFeature) => {
+  const { feature, order } = sortFeature;
   if (feature === 'default') return tracks;
 
   const featureMap = {
@@ -55,12 +56,12 @@ const sortTracksByFeature = (tracks, feature) => {
   const sorter = featureMap[feature] || audioFeaturesMap[feature];
 
   if (featureMap[feature]) {
-    return [...tracks].sort(sorter);
+    return order === 'asc' ? [...tracks].sort(sorter) : [...tracks].sort((a, b) => sorter(b, a));
   } else if (audioFeaturesMap[feature]) {
     const tracksWithFeature = tracks.filter(track => track.audioFeatures && track.audioFeatures[feature] !== undefined);
     const tracksWithoutFeature = tracks.filter(track => !track.audioFeatures || track.audioFeatures[feature] === undefined);
 
-    const sortedTracksWithFeature = tracksWithFeature.slice().sort(sorter);
+    const sortedTracksWithFeature = order === 'asc' ? tracksWithFeature.slice().sort(sorter) : tracksWithFeature.slice().sort((a, b) => sorter(b, a));
 
     return [...sortedTracksWithFeature, ...tracksWithoutFeature];
   }
@@ -110,7 +111,7 @@ export const usePlaylist = (playlistId) => {
     refetchInterval: Infinity,
   });
 
-  const sortedTracksByFeature = (feature) => sortTracksByFeature(originalTracksData || [], feature);
+  const sortedTracksByFeature = (sortFeature) => sortTracksByFeature(originalTracksData || [], sortFeature);
 
   return {
     playlist,
