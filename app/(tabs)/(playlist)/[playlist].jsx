@@ -22,8 +22,10 @@ export default function PlaylistEditor() {
     isTracksRefetching,
     isTracksError,
     sortedTracksByFeature,
+    reorderTracks,
+    createDuplicatePlaylist,
   } = usePlaylist(playlistId);
-  const [sortFeature, setSortFeature] = useState('default');
+  const [sortFeature, setSortFeature] = useState({ feature: 'default', order: 'asc' });
 
   const navigation = useNavigation();
 
@@ -42,16 +44,18 @@ export default function PlaylistEditor() {
 
   if (isPlaylistPending || isTracksPending) return <FlatListSkeleton editor />;
 
+  const tracks = sortedTracksByFeature(sortFeature);
+
   return (
     <FlatList
       className='flex-1 mt-[100]'
-      data={sortedTracksByFeature(sortFeature)}
+      data={tracks}
       style={{ overflow: 'visible' }}
       renderItem={({ item }) => <TrackCard track={item.track} />}
       keyExtractor={(item) => item.track.id || item.track.name + item.track.date_added}
       ListHeaderComponent={
         <>
-          <PlaylistHeaderCard playlist={playlist} sortFeature={sortFeature} setSortFeature={setSortFeature} />
+          <PlaylistHeaderCard playlist={playlist} tracks={tracks} reorderTracks={reorderTracks} createDuplicatePlaylist={createDuplicatePlaylist} />
           <SortCard sortFeature={sortFeature} setSortFeature={setSortFeature} />
         </>
       }

@@ -10,51 +10,61 @@ import * as Haptics from 'expo-haptics';
 
 interface PlaylistHeaderCardProps {
   playlist: any;
-  sortFeature: { feature: string, order: 'asc' | 'desc' };
-  setSortFeature: (feature: { feature: string, order: 'asc' | 'desc' }) => void;
+  tracks: any[];
+  reorderTracks: any;
+  createDuplicatePlaylist: any;
 }
 
-export default function PlaylistHeaderCard({ playlist, sortFeature, setSortFeature }: PlaylistHeaderCardProps) {
-  const [imageSize, setImageSize] = useState(50);
+export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, createDuplicatePlaylist }: PlaylistHeaderCardProps) {
+  const scale = useRef(new Animated.Value(1)).current;
 
-  const scaleHeader = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = (scale: Animated.Value) => {
+  const handlePressIn = () => {
     Animated.spring(scale, {
-      toValue: 0.95,
+      toValue: 0.9,
       useNativeDriver: true,
     }).start();
   };
 
-  const handlePressOut = (scale: Animated.Value) => {
+  const handlePressOut = () => {
     Animated.spring(scale, {
       toValue: 1,
+      friction: 3,
+      tension: 40,
       useNativeDriver: true,
     }).start();
   };
 
-  const onImagePress = () => {
-    setImageSize(imageSize === 50 ? 150 : 50);
+  const onPress = () => {
+    // Handle the press action here
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    reorderTracks(playlist, tracks);
   };
 
   return (
     <View className='flex-1'>
-      <Pressable onPressIn={() => handlePressIn(scaleHeader)} onPressOut={() => handlePressOut(scaleHeader)} onPress={onImagePress}>
-        <Animated.View style={{ transform: [{ scale: scaleHeader }] }}>
-          <Card className='flex-1 mt-2 mx-2 bg-popover shadow-none'>
-            <CardContent className='flex-1 flex-row p-2 justify-between items-center'>
-              <Image
-                source={{ uri: playlist?.images[0]?.url }}
-                style={{ width: imageSize, height: imageSize, borderRadius: 6 }}
-                placeholder={{ blurhash }}
-                contentFit="cover"
-                transition={1000}
-              />
-              {imageSize === 50 ? <ChevronDownCircle size={17} className='color-primary' /> : <ChevronUpCircle size={17} className='color-primary' />}
-            </CardContent>
-          </Card>
-        </Animated.View>
-      </Pressable>
+      <Card className='flex-1 mt-2 mx-2 bg-popover shadow-none'>
+        <CardContent className='flex-1 flex-row p-2 justify-center items-center'>
+          <Image
+            source={{ uri: playlist?.images[0]?.url }}
+            style={{ width: 150, height: 150, borderRadius: 6 }}
+            placeholder={{ blurhash }}
+            contentFit="cover"
+            transition={1000}
+          />
+          <Animated.View style={{ transform: [{ scale }] }}>
+            <Pressable
+              onPress={onPress}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              className={'rounded-full flex-row ml-1 items-center gap-1 px-3 py-1 bg-muted'}
+            >
+              <Text className={'font-semibold text-center text-foreground'}>
+                Save to Spotify
+              </Text>
+            </Pressable>
+          </Animated.View>
+        </CardContent>
+      </Card>
     </View>
   );
 }

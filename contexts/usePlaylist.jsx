@@ -113,6 +113,88 @@ export const usePlaylist = (playlistId) => {
 
   const sortedTracksByFeature = (sortFeature) => sortTracksByFeature(originalTracksData || [], sortFeature);
 
+  const reorderTracks = async (playlist, tracks) => {
+    if (!spotify || !accessToken || isTokenRefreshing) return;
+  
+    const playlistId = playlist.id;
+    const newOrder = tracks.slice();
+    const batchSize = 10;
+  
+    const playlistDetails = await spotify.getPlaylist(playlistId);
+    let snapshotId = playlistDetails.snapshot_id;
+  
+    // Create a map of current track positions
+    const currentPositions = originalTracksData.reduce((acc, track, index) => {
+      acc[track.track.id] = index;
+      return acc;
+    }, {});
+  
+    // Generate reordering operations based on newOrder
+    const reorderingOperations = newOrder.map((track, newPosition) => {
+      const currentPosition = currentPositions[track.track.id];
+      return { currentPosition, newPosition };
+    });
+  
+    reorderingOperations.sort((a, b) => a.newPosition - b.newPosition);
+  
+    for (let i = 0; i < reorderingOperations.length; i++) {
+      const operation = reorderingOperations[i];
+      const { currentPosition, newPosition } = operation;
+  
+      if (currentPosition !== newPosition) {
+        try {
+          console.log(`Reordering track from position ${currentPosition} to ${newPosition}`);
+  
+          await new Promise((resolve) => setTimeout(resolve, 75));
+          const data = await spotify.reorderTracksInPlaylist(playlistId, currentPosition, newPosition, {
+            snapshot_id: snapshotId,
+          });
+          snapshotId = data.snapshot_id;
+  
+          for (const op of reorderingOperations) {
+            if (op.currentPosition > currentPosition && op.currentPosition <= newPosition) {
+              op.currentPosition -= 1;
+            } else if (op.currentPosition < currentPosition && op.currentPosition >= newPosition) {
+              op.currentPosition += 1;
+            }
+          }
+  
+          // Update the progress bar after every batchSize operations
+          if (i % batchSize === batchSize - 1 || i === reorderingOperations.length - 1) {
+            console.log(`Progress: ${((i + 1) / tracks.length) * 100}%`);
+          }
+        } catch (error) {
+          console.error(`Error reordering track from position ${currentPosition} to ${newPosition}:`, error);
+          return;
+        }
+      }
+    }
+  
+    console.log('Sorted playlist successfully overridden');
+  };
+
+  const createDuplicatePlaylist = async (user, playlist, tracks) => {
+    if (!spotify || !accessToken || isTokenRefreshing) return;
+
+    try {
+      const newPlaylist = await spotify.createPlaylist(user.id, {
+        name: `${playlist.name} - Sorted`,
+        description: `${playlist.description ? `${playlist.description}. ` : ''}Sorted playlist`,
+      });
+      const newPlaylistId = newPlaylist.id;
+      const trackUris = tracks.filter((track) => track.id).map((track) => track.uri);
+
+      for (let i = 0; i < trackUris.length; i += 100) {
+        const chunk = trackUris.slice(i, i + 100);
+        await spotify.addTracksToPlaylist(newPlaylistId, chunk);
+      }
+
+      console.log('Sorted playlist successfully copied');
+    } catch (error) {
+      console.error('Error creating new playlist:', error);
+    }
+  };
+
   return {
     playlist,
     isPlaylistPending,
@@ -123,5 +205,7 @@ export const usePlaylist = (playlistId) => {
     isTracksRefetching,
     isTracksError,
     sortedTracksByFeature,
+    reorderTracks,
+    createDuplicatePlaylist,
   };
 };
