@@ -1,5 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '~/contexts/UserContext';
+import { useQuery } from '@tanstack/react-query';
+import useProgressToast from '~/hooks/useProgressToast'; // adjust the import according to your project structure
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigation, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+
 
 const fetchPlaylistDetails = async (spotify, playlistId) => {
   const playlist = await spotify.getPlaylist(playlistId);
@@ -70,7 +76,12 @@ const sortTracksByFeature = (tracks, sortFeature) => {
 };
 
 export const usePlaylist = (playlistId) => {
-  const { spotify, accessToken, isTokenRefreshing } = useUser();
+  const { spotify, accessToken, isTokenRefreshing, user } = useUser();
+  const [progress, setProgress] = useState(0);
+  const { showToast, hideToast, Toast } = useProgressToast(progress);
+  const queryClient = useQueryClient();
+  const navigation = useNavigation();
+  const router = useRouter();
 
   const {
     data: playlist,
@@ -115,42 +126,42 @@ export const usePlaylist = (playlistId) => {
 
   const reorderTracks = async (playlist, tracks) => {
     if (!spotify || !accessToken || isTokenRefreshing) return;
-  
+
+    navigation.setOptions({ headerBackVisible: false, gestureEnabled: false });
+    showToast(); // Show the progress toast
+
     const playlistId = playlist.id;
     const newOrder = tracks.slice();
     const batchSize = 10;
-  
+
     const playlistDetails = await spotify.getPlaylist(playlistId);
     let snapshotId = playlistDetails.snapshot_id;
-  
-    // Create a map of current track positions
+
     const currentPositions = originalTracksData.reduce((acc, track, index) => {
       acc[track.track.id] = index;
       return acc;
     }, {});
-  
-    // Generate reordering operations based on newOrder
+
     const reorderingOperations = newOrder.map((track, newPosition) => {
       const currentPosition = currentPositions[track.track.id];
       return { currentPosition, newPosition };
     });
-  
+
     reorderingOperations.sort((a, b) => a.newPosition - b.newPosition);
-  
+
+
     for (let i = 0; i < reorderingOperations.length; i++) {
       const operation = reorderingOperations[i];
       const { currentPosition, newPosition } = operation;
-  
+
       if (currentPosition !== newPosition) {
         try {
-          console.log(`Reordering track from position ${currentPosition} to ${newPosition}`);
-  
           await new Promise((resolve) => setTimeout(resolve, 75));
           const data = await spotify.reorderTracksInPlaylist(playlistId, currentPosition, newPosition, {
             snapshot_id: snapshotId,
           });
           snapshotId = data.snapshot_id;
-  
+
           for (const op of reorderingOperations) {
             if (op.currentPosition > currentPosition && op.currentPosition <= newPosition) {
               op.currentPosition -= 1;
@@ -158,54 +169,83 @@ export const usePlaylist = (playlistId) => {
               op.currentPosition += 1;
             }
           }
-  
-          // Update the progress bar after every batchSize operations
-          if (i % batchSize === batchSize - 1 || i === reorderingOperations.length - 1) {
-            console.log(`Progress: ${((i + 1) / tracks.length) * 100}%`);
-          }
+
+          const progressValue = ((i + 1) / reorderingOperations.length) * 100;
+          setProgress(progressValue);
         } catch (error) {
-          console.error(`Error reordering track from position ${currentPosition} to ${newPosition}:`, error);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          hideToast();
+          queryClient.invalidateQueries({ queryKey: ['playlistTracks', playlistId] });
+          navigation.setOptions({ headerBackVisible: true, gestureEnabled: true });
+
+          console.error('Error reordering tracks:', error);
           return;
         }
       }
     }
-  
-    console.log('Sorted playlist successfully overridden');
+
+    hideToast(); // Hide the progress toast when done
+    setProgress(0); // Reset the progress value
+    queryClient.invalidateQueries({ queryKey: ['playlistTracks', playlistId] });
+    navigation.setOptions({ headerBackVisible: true, gestureEnabled: true });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
   };
 
-  const createDuplicatePlaylist = async (user, playlist, tracks) => {
+  const createDuplicatePlaylist = async (playlist, tracks) => {
     if (!spotify || !accessToken || isTokenRefreshing) return;
 
     try {
+      showToast(); // Show the progress toast
+      // Create the new playlist
       const newPlaylist = await spotify.createPlaylist(user.id, {
-        name: `${playlist.name} - Sorted`,
-        description: `${playlist.description ? `${playlist.description}. ` : ''}Sorted playlist`,
+        name: `${playlist.name} copy`,
+        description: 'Created using TuneTidy',
       });
       const newPlaylistId = newPlaylist.id;
-      const trackUris = tracks.filter((track) => track.id).map((track) => track.uri);
 
+      // Log the new playlist ID
+      console.log('New playlist ID:', newPlaylistId);
+
+      // Prepare the track URIs
+      const trackUris = tracks.filter((track) => track.track.id).map((track) => track.track.uri);
+
+      // Add tracks to the new playlist in chunks
       for (let i = 0; i < trackUris.length; i += 100) {
         const chunk = trackUris.slice(i, i + 100);
+        console.log(`Adding chunk to playlist (${i}-${i + 100}):`, chunk);
+
+        // set progress
+        setProgress((i / trackUris.length) * 100);
+        
         await spotify.addTracksToPlaylist(newPlaylistId, chunk);
       }
-
+      
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      hideToast(); // Hide the progress toast when done
       console.log('Sorted playlist successfully copied');
+      router.back();
+      queryClient.invalidateQueries({ queryKey: ['playlists'] });
     } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.error('Error creating new playlist:', error);
     }
   };
+
 
   return {
     playlist,
     isPlaylistPending,
     isPlaylistRefetching,
     isPlaylistError,
-    tracksData: originalTracksData,
+    originalTracksData,
     isTracksPending,
     isTracksRefetching,
     isTracksError,
     sortedTracksByFeature,
     reorderTracks,
     createDuplicatePlaylist,
+    progress,
+    Toast, // Expose the Toast component
   };
 };

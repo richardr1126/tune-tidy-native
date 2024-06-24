@@ -10,6 +10,7 @@ export default function PlaylistLayout() {
           options={{
             title: 'Select',
             headerShown: false,
+            headerBackTitleVisible: false,
             //headerRight: () => <ThemeToggle />,
           }}
         />
@@ -19,7 +20,8 @@ export default function PlaylistLayout() {
             title: ' ',
             headerShadowVisible: false,
             headerTransparent: true,
-            headerBlurEffect: 'systemThinMaterial',
+            headerBlurEffect: 'prominent',
+            headerBackTitleVisible: false,
             //headerRight: () => <ThemeToggle />,
           }}
         />

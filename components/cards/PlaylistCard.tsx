@@ -92,14 +92,14 @@ function PlaylistCard({ playlist }: any) {
   const renderRightActions = (progress: any, dragX: any) => {
     const rightActionWidth = 150;
     const translateX = dragX.interpolate({
-      inputRange: [-rightActionWidth, 0],
-      outputRange: [0, rightActionWidth],
+      inputRange: [-rightActionWidth - 8, 0],
+      outputRange: [0, rightActionWidth + 8],
       extrapolate: 'clamp',
     });
 
     return (
       <Animated.View className='flex-row mr-2' style={{ width: rightActionWidth, transform: [{ translateX }] }}>
-        <View className='w-2'></View>
+        
         <View className='flex-1 flex-row justify-end'>
           <Animated.View className='flex-1' style={{ transform: [{ scale: actionScale1 }] }}>
             <Pressable
@@ -126,14 +126,24 @@ function PlaylistCard({ playlist }: any) {
     );
   };
 
+  const playlistImage = () => {
+    if (playlist.images) {
+      return playlist.images[0].url;
+    } else {
+      return require('~/assets/images/playlist_placeholder.png');
+    }
+  }
+
   return (
     <Swipeable renderRightActions={renderRightActions} ref={swipeRef} overshootRight={false}>
       <Pressable onPress={handlePress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
-        <Animated.View style={{ transform: [{ scale }] }}>
-          <Card className="mx-2 bg-card">
+        <Animated.View style={{ transform: [{ scale }], flexDirection: 'row' }}>
+          <View className='w-2'/>
+
+          <Card className="flex-1 bg-card">
             <CardContent className="flex-row p-2 items-center gap-2 flex-wrap">
               <Image
-                source={playlist.images[0].url}
+                source={playlistImage()}
                 style={{ width: 45, height: 45, borderRadius: 6 }}
                 placeholder={{ blurhash }}
                 contentFit="cover"
@@ -148,6 +158,7 @@ function PlaylistCard({ playlist }: any) {
               </View>
             </CardContent>
           </Card>
+          <View className='w-2'/>
         </Animated.View>
       </Pressable>
     </Swipeable>

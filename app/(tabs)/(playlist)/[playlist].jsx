@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FlatList, View, Text } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import FlatListSkeleton from "~/components/FlatListSkeleton";
-import { usePlaylist } from '~/contexts/usePlaylist'; // Adjust the import path as needed
+import { usePlaylist } from '~/hooks/usePlaylist'; // Adjust the import path as needed
 import TrackCard from "~/components/cards/TrackCard";
 import { useQueryClient } from "@tanstack/react-query";
 import PlaylistHeaderCard from "~/components/cards/PlaylistHeaderCard";
@@ -10,6 +10,7 @@ import SortCard from "~/components/cards/SortCard";
 
 export default function PlaylistEditor() {
   const queryClient = useQueryClient();
+
   const { playlist: playlistId } = useLocalSearchParams();
   const {
     playlist,
@@ -24,6 +25,8 @@ export default function PlaylistEditor() {
     sortedTracksByFeature,
     reorderTracks,
     createDuplicatePlaylist,
+    progress,
+    Toast
   } = usePlaylist(playlistId);
   const [sortFeature, setSortFeature] = useState({ feature: 'default', order: 'asc' });
 
@@ -55,8 +58,9 @@ export default function PlaylistEditor() {
       keyExtractor={(item) => item.track.id || item.track.name + item.track.date_added}
       ListHeaderComponent={
         <>
-          <PlaylistHeaderCard playlist={playlist} tracks={tracks} reorderTracks={reorderTracks} createDuplicatePlaylist={createDuplicatePlaylist} />
+          <PlaylistHeaderCard playlist={playlist} tracks={tracks} progress={progress} reorderTracks={reorderTracks} createDuplicatePlaylist={createDuplicatePlaylist} />
           <SortCard sortFeature={sortFeature} setSortFeature={setSortFeature} />
+          <Toast />
         </>
       }
       ListHeaderComponentStyle={{ flex: 1 }}
