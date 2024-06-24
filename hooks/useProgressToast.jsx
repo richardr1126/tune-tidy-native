@@ -10,6 +10,7 @@ const useProgressToast = (progress) => {
   const insets = useSafeAreaInsets();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(50)).current;
+  const scale = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
     if (progress >= 100) {
@@ -32,8 +33,13 @@ const useProgressToast = (progress) => {
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: true,
       }),
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 5,
+        useNativeDriver: true,
+      }),
     ]).start();
-  }, [opacity, translateY]);
+  }, [opacity, translateY, scale]);
 
   const hideToast = useCallback(() => {
     Animated.parallel([
@@ -49,10 +55,16 @@ const useProgressToast = (progress) => {
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: true,
       }),
+      Animated.timing(scale, {
+        toValue: 0.5,
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }),
     ]).start(() => {
       setOpen(false);
     });
-  }, [opacity, translateY]);
+  }, [opacity, translateY, scale]);
 
   const Toast = () => (
     open && (
@@ -61,7 +73,7 @@ const useProgressToast = (progress) => {
           style={{
             bottom: insets.bottom + 50,
             opacity: opacity,
-            transform: [{ translateY }],
+            transform: [{ translateY }, { scale }],
             position: 'absolute',
             width: '100%',
             paddingHorizontal: 8,

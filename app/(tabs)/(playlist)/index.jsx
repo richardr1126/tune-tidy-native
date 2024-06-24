@@ -19,7 +19,7 @@ function PlaylistSelector() {
 
   return (
     <FlatList
-      className="mt-14"
+      className="mt-16"
       data={playlists}
       style={{ overflow: 'visible' }}
       renderItem={({ item }) => <PlaylistCard playlist={item} />}

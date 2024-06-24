@@ -12,7 +12,7 @@ function FlatListSkeleton({playlist, artist, album, editor}: {playlist: boolean,
       data={ids}
       renderItem={() => <SkeletonCard />}
       keyExtractor={(id) => 'skeleton'+id}
-      ListHeaderComponent={playlist ? <PlaylistListPopup /> : artist ? <TimeCard artistPopup /> : album ? <TimeCard albumPopup /> : editor ? <View className="h-2"/>:<TimeCard />}
+      ListHeaderComponent={playlist ? <View className="h-2" /> : artist ? <View className="h-2" /> : album ? <TimeCard albumPopup /> : editor ? <View className="h-2"/>:<TimeCard />}
       ListFooterComponentStyle={{ flex: 1 }}
       ItemSeparatorComponent={() => <View className="h-2" />}
       ListFooterComponent={<View className="h-2" />}

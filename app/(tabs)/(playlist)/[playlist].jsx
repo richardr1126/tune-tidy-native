@@ -64,7 +64,6 @@ export default function PlaylistEditor() {
         </>
       }
       ListHeaderComponentStyle={{ flex: 1 }}
-
       ItemSeparatorComponent={<View className="h-2" />}
       ListFooterComponent={<View className="h-2" />}
       refreshing={isPlaylistRefetching || isTracksRefetching}

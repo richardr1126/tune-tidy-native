@@ -1,5 +1,5 @@
-import { memo, useState, useRef } from 'react';
-import { View, Pressable, Animated } from 'react-native';
+import { memo, useState, useRef, useEffect } from 'react';
+import { View, Pressable, Animated, Easing } from 'react-native';
 import { Card, CardContent } from '~/components/ui/card';
 import { P } from '~/components/ui/typography';
 import { cn } from '~/lib/utils';
@@ -8,19 +8,22 @@ import { useStats } from '~/contexts/StatsContext';
 import { XCircle } from '~/lib/icons/Close';
 import { Flame } from '~/lib/icons/Flame';
 import * as Haptics from 'expo-haptics';
+import { storeData, getData, clear } from '~/utils/asyncStorage';
 
 function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPopup?: boolean }) {
-  const padding = 'px-3 py-1';
   const { timeRange, setTimeRange } = useStats();
-  const [hidden, setHidden] = useState(!artistPopup);
+  const [hidden, setHidden] = useState(true);
 
   const scaleShortTerm = useRef(new Animated.Value(1)).current;
   const scaleMediumTerm = useRef(new Animated.Value(1)).current;
   const scaleLongTerm = useRef(new Animated.Value(1)).current;
 
-  const isActive = (range: string) => timeRange === range ? 'bg-muted' : '';
+  const popupOpacity = useRef(new Animated.Value(0)).current;
+  const popupScale = useRef(new Animated.Value(0.5)).current;
 
-  const textColor = (range: string) => timeRange === range ? 'text-foreground' : 'text-muted-foreground';
+  const isActive = (range: string) => (timeRange === range ? 'bg-muted' : '');
+
+  const textColor = (range: string) => (timeRange === range ? 'text-foreground' : 'text-muted-foreground');
 
   const onPress = (range: string) => {
     Haptics.selectionAsync();
@@ -41,27 +44,93 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
     }).start();
   };
 
+  const handleClosePopupPress = () => {
+    Animated.parallel([
+      Animated.timing(popupOpacity, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(popupScale, {
+        toValue: 0.5,
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setHidden(true);
+      storeData('artistPopupSeen', 'true');
+    });
+  };
+
+  useEffect(() => {
+    if (artistPopup) {
+      //clear();
+      getData('artistPopupSeen').then((seen) => {
+        if (seen !== 'true') {
+          setHidden(false);
+          Animated.parallel([
+            Animated.timing(popupOpacity, {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.inOut(Easing.ease),
+              useNativeDriver: true,
+            }),
+            Animated.spring(popupScale, {
+              toValue: 1,
+              friction: 3,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+      });
+    }
+  }, [popupOpacity, popupScale]);
+
+  useEffect(() => {
+    if (!hidden) {
+      Animated.parallel([
+        Animated.timing(popupOpacity, {
+          toValue: 1,
+          duration: 300,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.spring(popupScale, {
+          toValue: 1,
+          friction: 5,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [hidden, popupOpacity, popupScale]);
+
+  const padding = 'px-3 py-1';
+
   return (
     <View className='flex-1'>
       {!hidden && (
-        <Card className='flex-1 mt-2 mx-2 bg-popover shadow-none'>
-          <CardContent className='flex-1 flex-row py-2 px-2 items-center gap-4'>
-            <Flame className='color-primary' />
-            <View className='flex-1 gap-2'>
-              <P className='text-left'>
-                Here you can view your top Spotify stats in 3 different time ranges.
-              </P>
-              <View className='gap-0.5'>
-                <P className='text-left'>Last Month</P>
-                <P className='text-left'>6 Months</P>
-                <P className='text-left'>Long Term (~2 years)</P>
+        <Animated.View style={{ opacity: popupOpacity, transform: [{ scale: popupScale }] }}>
+          <Card className='flex-1 mt-2 mx-2 bg-popover shadow-none'>
+            <CardContent className='flex-1 flex-row py-2 px-2 items-center gap-4'>
+              <Flame className='color-primary' />
+              <View className='flex-1 gap-2'>
+                <P className='text-left'>
+                  Here you can view your top Spotify stats in 3 different time ranges.
+                </P>
+                <View className='gap-0.5'>
+                  <P className='text-left'>Last Month</P>
+                  <P className='text-left'>6 Months</P>
+                  <P className='text-left'>Long Term (~2 years)</P>
+                </View>
               </View>
-            </View>
-            <Pressable onPress={() => setHidden(true)} className='self-start items-end'>
-              <XCircle className='color-primary' size={17} />
-            </Pressable>
-          </CardContent>
-        </Card>
+              <Pressable onPress={handleClosePopupPress} className='self-start items-end'>
+                <XCircle className='color-primary' size={17} />
+              </Pressable>
+            </CardContent>
+          </Card>
+        </Animated.View>
       )}
 
       <Card className='flex-1 m-2 bg-popover shadow-none rounded-full'>
@@ -114,4 +183,4 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
   );
 }
 
-export default TimeCard;
+export default memo(TimeCard);
