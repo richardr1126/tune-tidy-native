@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from "react-native";
+import { View, Keyboard, TouchableWithoutFeedback, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { Textarea } from '~/components/ui/textarea';
 import ArtHeaderCard from "~/components/cards/ArtHeaderCard";
 import { useRef, useState, useEffect } from "react";
@@ -53,6 +53,7 @@ export default function CoverArtGenerator() {
 
     setLoading(true);
     Haptics.selectionAsync();
+    Keyboard.dismiss();
 
     fetch('https://generate-image-h2ovhy5mbq-uc.a.run.app', {
       method: 'POST',
@@ -79,6 +80,7 @@ export default function CoverArtGenerator() {
 
     setLoading(true);
     Haptics.selectionAsync();
+    Keyboard.dismiss();
 
     fetch('https://generate-prompt-h2ovhy5mbq-uc.a.run.app', {
       method: 'POST',
@@ -102,9 +104,13 @@ export default function CoverArtGenerator() {
   const saveToSpotify = async () => {
     try {
       setLoading(true);
+      Haptics.selectionAsync();
+      Keyboard.dismiss();
+
       await spotify.uploadCustomPlaylistCoverImage(playlistId, imageString); // base64 image string
       setLoading(false);
       console.log('Image saved to Spotify');
+
       router.back();
       queryClient.invalidateQueries({ queryKey: ['playlist', playlistId] });
     } catch (error) {
@@ -115,40 +121,50 @@ export default function CoverArtGenerator() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1">
-        <ArtHeaderCard imageString={imageString} />
-        <View className="flex-1 flex-col mx-2 gap-2">
-          <Textarea
-            ref={inputRef}
-            style={{ height: 100 }}
-            numberOfLines={4}
-            placeholder={generationCount >= MAX_GENERATIONS ? 'Out of generations for today.':'Custom prompt...'}
-            editable={generationCount < MAX_GENERATIONS}
-            value={customPrompt}
-            onChangeText={setCustomPrompt}
-            aria-labelledby='textareaLabel'
-          />
-          <Button className="bg-muted" disabled={customPrompt.length === 0 || loading || generationCount >= MAX_GENERATIONS} onPress={() => generateCoverArt(customPrompt)}>
-            {!loading && <Text className="text-foreground">Generate using custom prompt</Text>}
-            {loading && <ActivityIndicator size="small" className="color-foreground" />}
-          </Button>
-          <Button onPress={generateForMe} disabled={loading || generationCount >= MAX_GENERATIONS}>
-            {!loading &&
-              <View className="flex-row gap-2 items-center">
-                <Sparkles className="color-muted" />
-                <Text>Generate for me</Text>
-              </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      >
+        <View className="flex-1">
+          <ArtHeaderCard imageString={imageString} generationCount={generationCount} />
+          <View className="flex-1 flex-col mx-2 gap-2 justify-between">
+            {!loading && imageString &&
+              <Button className="flex-row gap-2 bg-destructive" onPress={saveToSpotify}>
+                <Save className="color-foreground" />
+                <Text className="text-foreground">Save to Spotify</Text>
+              </Button>
             }
-            {loading && <ActivityIndicator size="small" className="color-foreground" />}
-          </Button>
-          {!loading && imageString && 
-            <Button className="flex-row gap-2 bg-destructive mt-10" onPress={saveToSpotify}>
-              <Save className="color-foreground" />
-              <Text className="text-foreground">Save to Spotify</Text>
-            </Button>
-          }
+            <View />
+            <View className="gap-2 mb-12">
+              <Textarea
+                ref={inputRef}
+                style={{ height: 75 }}
+                numberOfLines={4}
+                placeholder={generationCount >= MAX_GENERATIONS ? 'Out of generations for today.' : 'Custom prompt...'}
+                editable={generationCount < MAX_GENERATIONS}
+                value={customPrompt}
+                onChangeText={setCustomPrompt}
+                aria-labelledby='textareaLabel'
+              />
+
+              <Button className="bg-muted" disabled={customPrompt.length === 0 || loading || generationCount >= MAX_GENERATIONS} onPress={() => generateCoverArt(customPrompt)}>
+                {!loading && <Text className="text-foreground">Generate using custom prompt</Text>}
+                {loading && <ActivityIndicator size="small" className="color-foreground" />}
+              </Button>
+              <Button onPress={generateForMe} disabled={loading || generationCount >= MAX_GENERATIONS}>
+                {!loading &&
+                  <View className="flex-row gap-2 items-center">
+                    <Sparkles className="color-muted" />
+                    <Text>Generate for me</Text>
+                  </View>
+                }
+                {loading && <ActivityIndicator size="small" className="color-foreground" />}
+              </Button>
+            </View>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

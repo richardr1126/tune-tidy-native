@@ -24,6 +24,11 @@ const fetchAllPlaylistTracks = async (spotify, playlistId) => {
     hasMoreTracks = response.items.length === 50;
   }
 
+  //log names of all tracks
+  allTracks.forEach((item) => {
+    console.log(item.track.name);
+  });
+  console.log('----------');
   return allTracks;
 };
 
