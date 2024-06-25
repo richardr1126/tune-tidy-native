@@ -3,12 +3,14 @@ import ModelSelector from "~/components/ModelSelector";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import { useUser } from "~/contexts/UserContext";
 
 import { Sparkles } from "~/lib/icons/Magic";
 import { useColorScheme } from "~/lib/useColorScheme";
 
 export default function Settings() {
   const { isDarkColorScheme } = useColorScheme();
+  const { logout } = useUser();
 
 
   return (
@@ -26,7 +28,7 @@ export default function Settings() {
         </View>
       </View>
       <View className="px-2 py-2 bg-card border-t border-b border-border">
-        <Button>
+        <Button onPress={logout}>
           <Text>Logout</Text>
         </Button>
       </View>

@@ -96,7 +96,6 @@ export const UserProvider = ({ children }) => {
   async function logout() {
     await clear();
     await queryClient.invalidateQueries();
-    router.push('/landing');
   }
 
   return (
