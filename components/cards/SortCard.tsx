@@ -2,8 +2,8 @@ import React, { memo, useRef } from 'react';
 import { ScrollView, Pressable, Animated, View } from 'react-native';
 import { Card, CardContent } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
-import { ChevronDownCircle } from '~/lib/icons/ChevronDown';
-import { ChevronUpCircle } from '~/lib/icons/ChevronUp';
+import { ChevronDown } from '~/lib/icons/ChevronDown';
+import { ChevronUp } from '~/lib/icons/ChevronUp';
 import * as Haptics from 'expo-haptics';
 import { cn } from '~/lib/utils';
 
@@ -91,7 +91,7 @@ function SortCard({ sortFeature, setSortFeature }: SortCardProps) {
                     {feature.charAt(0).toUpperCase() + feature.slice(1)}
                   </Text>
                   {sortFeature.feature === feature && (
-                    sortFeature.order === 'asc' ? <ChevronDownCircle size={15} className='color-foreground' /> : <ChevronUpCircle size={15} className='color-foreground' />
+                    sortFeature.order === 'asc' ? <ChevronDown size={15} className='color-foreground' /> : <ChevronUp size={15} className='color-foreground' />
                   )}
                 </Pressable>
               </Animated.View>
@@ -111,7 +111,7 @@ function SortCard({ sortFeature, setSortFeature }: SortCardProps) {
                     {label}
                   </Text>
                   {sortFeature.feature === key && (
-                    sortFeature.order === 'asc' ? <ChevronDownCircle size={15} className='color-foreground' /> : <ChevronUpCircle size={15} className='color-foreground' />
+                    sortFeature.order === 'asc' ? <ChevronDown size={15} className='color-foreground' /> : <ChevronUp size={15} className='color-foreground' />
                   )}
                 </Pressable>
               </Animated.View>
