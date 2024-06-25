@@ -6,7 +6,10 @@ import { Image } from 'expo-image';
 import { blurhash } from '~/lib/utils';
 import { Save } from '~/lib/icons/Save';
 import { PlusSquare } from '~/lib/icons/PlusSquare';
+import { Sparkles } from '~/lib/icons/Magic';
+
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 
 interface PlaylistHeaderCardProps {
   playlist: any;
@@ -19,6 +22,8 @@ interface PlaylistHeaderCardProps {
 export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, progress, createDuplicatePlaylist }: PlaylistHeaderCardProps) {
   const saveScale = useRef(new Animated.Value(1)).current;
   const duplicateScale = useRef(new Animated.Value(1)).current;
+  const artScale = useRef(new Animated.Value(1)).current;
+  const router = useRouter();
 
   const handlePressIn = (scale: Animated.Value) => {
     Animated.spring(scale, {
@@ -37,7 +42,7 @@ export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, pr
   };
 
   const playlistImage = () => {
-    if (playlist.images) {
+    if (playlist?.images) {
       return playlist.images[0].url;
     } else {
       return require('~/assets/images/playlist_placeholder.png');
@@ -54,6 +59,14 @@ export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, pr
     createDuplicatePlaylist(playlist, tracks);
   };
 
+  const onArtPress = () => {
+    console.log('Cover art generation pressed');
+    Haptics.selectionAsync();
+    const uniqueArtists = [...new Set(tracks.map((track) => track.track.artists[0].name))];
+    // Add your sort functionality here
+    router.push({ pathname: 'art', params: { playlistId: playlist.id, artists: JSON.stringify(uniqueArtists)} });
+  };
+
   return (
     <View className='flex-1'>
       <Card className='flex-1 mt-2 mx-2 bg-popover shadow-none'>
@@ -66,17 +79,16 @@ export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, pr
             transition={1000}
           />
           <View className='flex-1 gap-2 justify-center'>
-            <Animated.View style={{ transform: [{ scale: saveScale }] }}>
+            <Animated.View style={{ transform: [{ scale: artScale }] }}>
               <Pressable
-                onPress={onSave}
-                onPressIn={() => handlePressIn(saveScale)}
-                onPressOut={() => handlePressOut(saveScale)}
-                disabled={progress > 0}
+                onPress={onArtPress}
+                onPressIn={() => handlePressIn(artScale)}
+                onPressOut={() => handlePressOut(artScale)}
                 className={'rounded-full flex-row justify-center items-center gap-2 px-3 py-1 bg-muted'}
               >
-                <Save size={17} className={'color-foreground'} />
+                <Sparkles size={17} className={'color-foreground'} />
                 <Text className={'font-semibold text-center text-foreground'}>
-                  Save and reorder
+                  Generate cover art
                 </Text>
               </Pressable>
             </Animated.View>
@@ -91,6 +103,20 @@ export default function PlaylistHeaderCard({ playlist, tracks, reorderTracks, pr
                 <PlusSquare size={17} className={'color-foreground'} />
                 <Text className={'font-semibold text-center text-foreground'}>
                   Save as new playlist
+                </Text>
+              </Pressable>
+            </Animated.View>
+            <Animated.View style={{ transform: [{ scale: saveScale }] }}>
+              <Pressable
+                onPress={onSave}
+                onPressIn={() => handlePressIn(saveScale)}
+                onPressOut={() => handlePressOut(saveScale)}
+                disabled={progress > 0}
+                className={'rounded-full flex-row justify-center items-center gap-2 px-3 py-1 bg-muted'}
+              >
+                <Save size={17} className={'color-foreground'} />
+                <Text className={'font-semibold text-center text-foreground'}>
+                  Save and reorder
                 </Text>
               </Pressable>
             </Animated.View>

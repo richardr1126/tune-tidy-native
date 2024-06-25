@@ -66,7 +66,7 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
 
   useEffect(() => {
     if (artistPopup) {
-      //clear();
+      
       getData('artistPopupSeen').then((seen) => {
         if (seen !== 'true') {
           setHidden(false);
@@ -79,7 +79,7 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
             }),
             Animated.spring(popupScale, {
               toValue: 1,
-              friction: 3,
+              friction: 6,
               useNativeDriver: true,
             }),
           ]).start();
@@ -87,24 +87,6 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
       });
     }
   }, [popupOpacity, popupScale]);
-
-  useEffect(() => {
-    if (!hidden) {
-      Animated.parallel([
-        Animated.timing(popupOpacity, {
-          toValue: 1,
-          duration: 300,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.spring(popupScale, {
-          toValue: 1,
-          friction: 5,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-  }, [hidden, popupOpacity, popupScale]);
 
   const padding = 'px-3 py-1';
 
@@ -116,7 +98,7 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
             <CardContent className='flex-1 flex-row py-2 px-2 items-center gap-4'>
               <Flame className='color-primary' />
               <View className='flex-1 gap-2'>
-                <P className='text-left'>
+                <P className='text-left font-bold'>
                   Here you can view your top Spotify stats in 3 different time ranges.
                 </P>
                 <View className='gap-0.5'>
@@ -173,7 +155,7 @@ function TimeCard({ artistPopup, albumPopup }: { artistPopup?: boolean, albumPop
       {albumPopup && (
         <Card className='flex-1 m-2 mt-0 bg-popover shadow-none'>
           <CardContent className='flex-1 px-4 py-2'>
-            <P className='text-left'>
+            <P className='flex-1 text-left font-bold'>
               Top Albums may take a while to load as it is calculated on device with all of your Top Tracks.
             </P>
           </CardContent>

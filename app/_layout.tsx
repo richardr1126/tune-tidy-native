@@ -83,22 +83,28 @@ export default function RootLayout() {
               <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
               <Stack>
                 <Stack.Screen
+                  name="(tabs)"
+                  options={{
+                    title: 'TuneTidy',
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
                   name='landing'
                   //modal
                   options={{
                     presentation: 'modal',
                     gestureEnabled: false,
-                    title: 'Link Spotify Account',
                     headerShown: false,
-                    //headerRight: () => <ThemeToggle />,
                   }}
                 />
                 <Stack.Screen
-                  name="(tabs)"
+                  name='art'
+                  //modal
                   options={{
-                    title: 'TuneTidy',
+                    presentation: 'modal',
+                    gestureEnabled: true,
                     headerShown: false,
-                    //headerRight: () => <ThemeToggle />,
                   }}
                 />
               </Stack>

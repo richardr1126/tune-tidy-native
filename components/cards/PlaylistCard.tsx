@@ -21,7 +21,7 @@ function PlaylistCard({ playlist }: any) {
   const swipeRef = useRef<Swipeable>(null);
 
   const actionScale1 = useRef(new Animated.Value(1)).current;
-  const actionScale2 = useRef(new Animated.Value(1)).current;
+  const actionScale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     Animated.spring(scale, {
@@ -37,29 +37,15 @@ function PlaylistCard({ playlist }: any) {
     }).start();
   };
 
-  const handleActionPressIn1 = () => {
-    Animated.spring(actionScale1, {
+  const handleActionPressIn = () => {
+    Animated.spring(actionScale, {
       toValue: 0.95,
       useNativeDriver: true,
     }).start();
   };
 
-  const handleActionPressOut1 = () => {
-    Animated.spring(actionScale1, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleActionPressIn2 = () => {
-    Animated.spring(actionScale2, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleActionPressOut2 = () => {
-    Animated.spring(actionScale2, {
+  const handleActionPressOut = () => {
+    Animated.spring(actionScale, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
@@ -85,12 +71,14 @@ function PlaylistCard({ playlist }: any) {
 
   const onSparklesPress = () => {
     console.log('Sparkles pressed');
+    Haptics.selectionAsync();
     swipeRef.current?.close();
     // Add your sort functionality here
+    router.push({ pathname: 'art', params: { playlist: JSON.stringify(playlist) } });
   };
 
   const renderRightActions = (progress: any, dragX: any) => {
-    const rightActionWidth = 150;
+    const rightActionWidth = 90;
     const translateX = dragX.interpolate({
       inputRange: [-rightActionWidth - 8, 0],
       outputRange: [0, rightActionWidth + 8],
@@ -101,21 +89,11 @@ function PlaylistCard({ playlist }: any) {
       <Animated.View className='flex-row mr-2' style={{ width: rightActionWidth, transform: [{ translateX }] }}>
         
         <View className='flex-1 flex-row justify-end'>
-          <Animated.View className='flex-1' style={{ transform: [{ scale: actionScale1 }] }}>
+          <Animated.View className='flex-1' style={{ transform: [{ scale: actionScale }] }}>
             <Pressable
-              className='flex-1 bg-accent rounded-l-md justify-center items-center'
-              onPressIn={handleActionPressIn1}
-              onPressOut={handleActionPressOut1}
-              onPress={onSparklesPress}
-            >
-              <Sparkles size={24} className='color-popover' />
-            </Pressable>
-          </Animated.View>
-          <Animated.View className='flex-1' style={{ transform: [{ scale: actionScale2 }] }}>
-            <Pressable
-              className='flex-1 bg-destructive rounded-r-md justify-center items-center'
-              onPressIn={handleActionPressIn2}
-              onPressOut={handleActionPressOut2}
+              className='flex-1 bg-destructive rounded-md justify-center items-center'
+              onPressIn={handleActionPressIn}
+              onPressOut={handleActionPressOut}
               onPress={onTrashPress}
             >
               <Trash size={24} className="color-popover" />

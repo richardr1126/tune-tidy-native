@@ -1,0 +1,4 @@
+firebase_functions
+openai
+python-dotenv
+Pillow

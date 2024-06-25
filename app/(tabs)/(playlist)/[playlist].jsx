@@ -55,7 +55,7 @@ export default function PlaylistEditor() {
       data={tracks}
       style={{ overflow: 'visible' }}
       renderItem={({ item }) => <TrackCard track={item.track} />}
-      keyExtractor={(item) => item.track.id || item.track.name + item.track.date_added}
+      keyExtractor={(item) => item.track.id + item.added_at || item.track.name + item.added_at}
       ListHeaderComponent={
         <>
           <PlaylistHeaderCard playlist={playlist} tracks={tracks} progress={progress} reorderTracks={reorderTracks} createDuplicatePlaylist={createDuplicatePlaylist} />
