@@ -50,7 +50,7 @@ export default function ArtHeaderCard({ imageString, generationCount }: { imageS
           <View className='flex-row gap-4 items-center'>
             <Sparkles className='color-primary mt-1 ml-1' />
             <P className='flex-1 text-left font-bold'>
-              Here you can use OpenAI's Dalle 2/3 to generate a cover art for your playlist. You get 3 free generations per day.
+              Here you can use OpenAI's Dalle to generate a cover art for your playlist. You get 3 free generations per day.
             </P>
           </View>
           <Separator />

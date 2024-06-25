@@ -1,4 +1,4 @@
-import { ChevronDownCircle } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import { iconWithClassName } from './iconWithClassName';
-iconWithClassName(ChevronDownCircle);
-export { ChevronDownCircle };
+iconWithClassName(ChevronDown);
+export { ChevronDown };

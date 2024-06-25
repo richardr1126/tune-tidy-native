@@ -51,7 +51,7 @@ def generate_image(req: https_fn.Request) -> https_fn.Response:
 
         # Compress the image
         compressed_base64_image = compress_image(
-            base64_image, quality=20
+            base64_image, quality=25
         )  # Adjust quality as needed
 
         # Return the compressed base64 image as JSON response
@@ -87,7 +87,7 @@ def generate_prompt(req: https_fn.Request) -> https_fn.Response:
                 },
                 {
                     "role": "user",
-                    "content": f"Generate a creative and visually descriptive prompt for a playlist cover art based on artists:\n\n{playlist_description}",
+                    "content": f"Generate a creative and visually descriptive prompt (keeping it relatively short) for a playlist cover art based on artists:\n\n{playlist_description}",
                 },
             ],
             response_format={"type": "json_object"},
