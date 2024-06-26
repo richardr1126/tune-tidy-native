@@ -93,7 +93,7 @@ export default function Landing() {
 
   return (
     <View className='px-5 flex-1 justify-center bg-secondary/30'>
-      <Card className='w-full max-w-md'>
+      <Card className='w-full max-w-md self-center'>
         <CardHeader>
           <CardTitle>Welcome to TuneTidy!</CardTitle>
           <CardDescription>Completely free to use, no ads, and no data collection.</CardDescription>

@@ -65,7 +65,7 @@ function PlaylistListPopup() {
           <Edit className='color-primary' />
           <P className='flex-1 text-left font-bold'>
             Here you can sort and manage your playlists.
-            You can delete playlists or create AI cover art by swiping on your playlist.
+            You can delete playlists by swiping.
             Please select a playlist to get started.
           </P>
 
