@@ -127,8 +127,9 @@ export const usePlaylist = (playlistId) => {
   const reorderTracks = async (playlist, tracks) => {
     if (!spotify || !accessToken || isTokenRefreshing) return;
 
-    navigation.setOptions({ headerBackVisible: false, gestureEnabled: false });
     showToast(); // Show the progress toast
+
+    navigation.setOptions({ headerBackVisible: false, gestureEnabled: false });
 
     const playlistId = playlist.id;
     const newOrder = tracks.slice();

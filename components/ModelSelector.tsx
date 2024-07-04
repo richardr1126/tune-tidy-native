@@ -46,7 +46,7 @@ function ModelSelector() {
       onValueChange={(option) => {
         setSelectedModel(option);
       }}
-      className='flex-1'
+      className='w-28'
     >
       <SelectTrigger className=''>
         <SelectValue
@@ -56,7 +56,6 @@ function ModelSelector() {
       </SelectTrigger>
       <SelectContent insets={contentInsets} className=''>
         <SelectGroup>
-          <SelectLabel>Models</SelectLabel>
           <SelectItem label='Dalle 2' value='dall-e-2'>
             Dalle 2
           </SelectItem>

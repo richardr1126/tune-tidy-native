@@ -15,19 +15,19 @@ export default function Settings() {
 
   return (
     <View className="flex-1 justify-between">
-      <View className="gap-2">
-        <View>
-          <View className="px-4 py-3 bg-card border-t border-b border-border flex-row justify-between items-center">
-            <Text className="font-bold">Toggle {isDarkColorScheme ? 'light' : 'dark'} mode</Text>
+      <View>
+        <View className="gap-2">
+          <View className="px-3 py-1.5 bg-card border-b border-t border-border flex-row items-center justify-between">
+            <Text className="font-bold">Theme</Text>
             <ThemeToggle />
           </View>
-          <View className="px-3 py-2 bg-card border-b border-border flex-row items-center gap-14">
+          <View className="px-3 py-1.5 bg-card border-b border-t border-border flex-row items-center justify-between">
             <Text className="font-bold">Cover art generation model</Text>
             <ModelSelector />
           </View>
         </View>
       </View>
-      <View className="px-2 py-2 bg-card border-t border-b border-border">
+      <View className="px-2 py-2">
         <Button onPress={logout}>
           <Text>Logout</Text>
         </Button>

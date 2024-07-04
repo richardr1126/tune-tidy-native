@@ -68,7 +68,7 @@ const useProgressToast = (progress) => {
 
   const Toast = () => (
     open && (
-      <Portal name='toast-example'>
+      <Portal name='toast'>
         <Animated.View
           style={{
             bottom: insets.bottom + 50,
@@ -83,6 +83,7 @@ const useProgressToast = (progress) => {
             type='foreground'
             open={open}
             onOpenChange={setOpen}
+          
             className='opacity-95 bg-popover border border-border flex-row justify-between items-center p-3 rounded-lg'
           >
             <View className='gap-2 flex-1'>

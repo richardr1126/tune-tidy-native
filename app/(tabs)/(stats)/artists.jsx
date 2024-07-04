@@ -17,7 +17,7 @@ function TopArtists() {
   }
 
   if (isArtistsPending) return (
-    <FlatListSkeleton artist />
+    <FlatListSkeleton />
   );
 
   return (
